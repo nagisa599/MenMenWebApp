@@ -3,8 +3,8 @@ import 'chart.js/auto';
 import { Pie } from 'react-chartjs-2';
 
 interface PieChartProps {
-  title: string; // タイトルのプロパティを追加
-  favorite: number[]; // おそらくこの型は数値の配列と仮定しています
+  title: string;
+  favorite: number[];
   label: string[];
 }
 
@@ -17,12 +17,13 @@ const PieChart: React.FC<PieChartProps> = ({ title, favorite, label }) => {
   const percentages = favorite.map((ramenCount) =>
     calculatePercentage(ramenCount, totalRamen)
   );
+  const counts = favorite.map((ramenCount) => ramenCount);
 
   const data = {
     labels: label,
     datasets: [
       {
-        data: percentages, // パーセンテージのデータを使用する
+        data: percentages,
         backgroundColor: ['#4CAF50', '#FFC107', '#2196F3', '#FF5722', '#9C27B0', '#FFFFF'],
       },
     ],
@@ -37,7 +38,8 @@ const PieChart: React.FC<PieChartProps> = ({ title, favorite, label }) => {
           label: (context) => {
             const label = context.label || '';
             const value = context.parsed;
-            return `${label}: ${value.toFixed(0)}%`; // ラベルにパーセントの値を追加
+            const count = counts[context.dataIndex]; // 対応する数値を取得
+            return `${label}: ${value.toFixed(0)}% (${count}件)`; // ラベルにパーセントの値と実際の数を追加
           },
         },
       },
@@ -46,7 +48,7 @@ const PieChart: React.FC<PieChartProps> = ({ title, favorite, label }) => {
 
   return (
     <div className="w-1/4 mx-auto mt-8">
-      <h2 className="text-xl font-bold mb-4">{title}</h2> {/* タイトルを表示 */}
+      <h2 className="text-xl font-bold mb-4">{title}</h2>
       <Pie data={data} options={options} />
     </div>
   );

@@ -70,6 +70,7 @@ const Home: React.FC = () => {
         <PieChart title="お客様のお好みラーメン"favorite={favoriteRamen} label={ramenLabel}/>
         <PieChart title="お客様のお好みtopping"favorite={favoriteTopping} label={toppingLabel}/>
       </div>
+      <LineChart />
     </div>
   );
 };
