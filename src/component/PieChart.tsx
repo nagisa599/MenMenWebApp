@@ -35,7 +35,7 @@ const PieChart: React.FC<PieChartProps> = ({ title, favorite, label }) => {
       },
       tooltip: {
         callbacks: {
-          label: (context) => {
+          label: (context:any) => {
             const label = context.label || '';
             const value = context.parsed;
             const count = counts[context.dataIndex]; // 対応する数値を取得
