@@ -17,7 +17,7 @@ interface Menu {
   price: number;
 }
 
-const Menu: NextPage = () => {
+const Menu = () => {
   const [menus, setMenu] = useState<Menu[]>([]);
   const [newMenu, setNewMenu] = useState<Menu>({
     id: '',
