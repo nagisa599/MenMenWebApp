@@ -36,38 +36,42 @@ const Menu: NextPage = () => {
       const db = getFirestore();
       const menusRef = collection(db, 'ramens');
       const querySnapshot = await getDocs(menusRef);
-      const menuData: Menu[] = [];
-
-      // Firestoreからデータを取得
-      querySnapshot.forEach(async (doc) => {
+      const menuDataPromises: Promise<Menu>[] = [];
+  
+      querySnapshot.forEach((doc) => {
         const data = doc.data();
-        const imageRef = ref(getStorage(), `${data.imageURL}`); // Firestoreデータ内の画像URLを使用してStorageの参照を作成
-        console.log(imageRef);
-        const imageUrl = await getDownloadURL(imageRef); // 画像をダウンロード
-
-        menuData.push({
+        const imageRef = ref(getStorage(), `${data.imageURL}`);
+        const imageUrlPromise = getDownloadURL(imageRef);
+  
+        // 画像URLの取得をPromiseで保持
+        menuDataPromises.push(imageUrlPromise.then((imageUrl) => ({
           id: doc.id,
           name: data.name,
-          image: imageUrl, // ダウンロードした画像のURLを使用
+          image: imageUrl,
           favorite: data.favorite,
           limit: data.limit,
           price: data.price,
           student: data.student,
           today: data.today,
           topping: data.topping,
-        });
+        })));
       });
-      console.log('menuData前:', menuData);
-      setMenu(menuData);
-      console.log('menuData後:', menuData);
+  
+      // すべてのデータを非同期で取得
+      const menuData = await Promise.all(menuDataPromises);
+      return menuData;
     } catch (error) {
       console.error(error);
+      return [];
     }
   };
-
+  
   useEffect(() => {
-    fetchData();
+    fetchData().then((data) => {
+      setMenu(data);
+    });
   }, []);
+  
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files[0]; // 選択されたファイルを取得
