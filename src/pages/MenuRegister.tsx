@@ -56,10 +56,21 @@ const Menu: NextPage = () => {
           topping: data.topping,
         })));
       });
-  
+
       // すべてのデータを非同期で取得
       const menuData = await Promise.all(menuDataPromises);
-      return menuData;
+
+      // topping が false のデータを前にするために、true と false の順に並び替え
+      const sortedMenuData = menuData.sort((a, b) => {
+        if (!a.topping && b.topping) {
+          return -1; // aがfalseでbがtrueの場合、aを前にする
+        } else if (a.topping && !b.topping) {
+          return 1; // aがtrueでbがfalseの場合、bを前にする
+        }
+        return 0;
+      });
+
+      return sortedMenuData;
     } catch (error) {
       console.error(error);
       return [];
@@ -78,7 +89,8 @@ const Menu: NextPage = () => {
     if (file) {
       // Firebase Storageにアップロード
       const storage = getStorage();
-      const storageRef = ref(storage, `${process.env.FILEPATH}/${file.name}`);
+      const storageRef = ref(storage, `${file.name}`);
+      // const storageRef = ref(storage, `${process.env.FILEPATH}/${file.name}`);
       uploadBytes(storageRef, file).then((snapshot) => {
         console.log('ファイルがアップロードされました');
         // アップロードが完了したら、画像のURLを取得
@@ -216,51 +228,8 @@ const Menu: NextPage = () => {
             メニューを追加
           </button>
         </div>
-        {/* {menus.length > 0 ? (
-          <table className="min-w-full border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 p-2">ID</th>
-              <th className="border border-gray-300 p-2">名前</th>
-              <th className="border border-gray-300 p-2">画像</th>
-              <th className="border border-gray-300 p-2">値段</th>
-              <th className="border border-gray-300 p-2">学割</th>
-              <th className="border border-gray-300 p-2">期間限定</th>
-              <th className="border border-gray-300 p-2">今日やっているか</th>
-              <th className="border border-gray-300 p-2">トッピングか</th>
-              <th className="border border-gray-300 p-2">人気度</th>
-            </tr>
-          </thead>
-          <tbody>
-            {menus.map((menu) => (
-              <tr key={menu.id}>
-                <td className="border border-gray-300 p-2">{menu.id}</td>
-                <td className="border border-gray-300 p-2">{menu.name}</td>
-                <td className="border border-gray-300 p-2">
-                  <img
-                    src={menu.image}
-                    alt={menu.name}
-                    style={{
-                      maxWidth: 200,
-                      height: "auto",
-                    }}
-                  />
-                </td>
-                <td className="border border-gray-300 p-2">{menu.price}</td>
-                <td className="border border-gray-300 p-2">{menu.student ? 'Yes' : 'No'}</td>
-                <td className="border border-gray-300 p-2">{menu.limit ? 'Yes' : 'No'}</td>
-                <td className="border border-gray-300 p-2">{menu.today ? 'Yes' : 'No'}</td>
-                <td className="border border-gray-300 p-2">{menu.topping ? 'Yes' : 'No'}</td>
-                <td className="border border-gray-300 p-2">{menu.favorite}</td>
-              </tr>
-            ))}
-          </tbody>
-          </table>
-        ) : (
-          menus.length === 0 ? <p>データがありません</p> : <p>データを読み込んでいます...</p>
-        )} */}
         <table className="min-w-full border border-gray-300">
-          <thead>
+          <thead className="sticky top-0 bg-gray-100">
             <tr className="bg-gray-100">
               <th className="border border-gray-300 p-2">ID</th>
               <th className="border border-gray-300 p-2">名前</th>
@@ -289,10 +258,10 @@ const Menu: NextPage = () => {
                   />
                 </td>
                 <td className="border border-gray-300 p-2">{menu.price}</td>
-                <td className="border border-gray-300 p-2">{menu.student ? 'Yes' : 'No'}</td>
-                <td className="border border-gray-300 p-2">{menu.limit ? 'Yes' : 'No'}</td>
-                <td className="border border-gray-300 p-2">{menu.today ? 'Yes' : 'No'}</td>
-                <td className="border border-gray-300 p-2">{menu.topping ? 'Yes' : 'No'}</td>
+                <td className="border border-gray-300 p-2">{menu.student ? '○' : ''}</td>
+                <td className="border border-gray-300 p-2">{menu.limit ? '○' : ''}</td>
+                <td className="border border-gray-300 p-2">{menu.today ? '○' : ''}</td>
+                <td className="border border-gray-300 p-2">{menu.topping ? '○' : ''}</td>
                 <td className="border border-gray-300 p-2">{menu.favorite}</td>
               </tr>
             ))}
