@@ -26,7 +26,7 @@ const LineChart: React.FC = () => {
   };
 
   return (
-    <div className="w-1/4 mx-auto mt-8">
+    <div className="flex justify-center items-center mx-auto mt-8 w-full h-96"> 
       <Line data={data} options={options} />
     </div>
   );
