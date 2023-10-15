@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getApp } from 'firebase/app';
 import { collection, addDoc, getFirestore, getDocs, query, getDoc, doc, setDoc } from 'firebase/firestore';
+import Navbar from '@/component/Navbar';
 
 interface Coupon {
   id: string;
@@ -142,84 +143,87 @@ const Coupon: NextPage = () => {
 }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Coupons</h1>
-      <div className="mb-4">
-        <input
-          type="text"
-          name="name"
-          placeholder="クーポン名"
-          value={newCoupon.name}
-          onChange={handleInputChange}
-          className="p-2 border border-gray-300 rounded mr-2"
-        />
-        <input
-          type="text"
-          name="content"
-          placeholder="内容"
-          value={newCoupon.content}
-          onChange={handleInputChange}
-          className="p-2 border border-gray-300 rounded mr-2"
-        />
-        <input
-          type="text"
-          name="target"
-          placeholder="対象"
-          value={newCoupon.target}
-          onChange={handleInputChange}
-          className="p-2 border border-gray-300 rounded mr-2"
-        />
-        <input
-          type="text"
-          name="expiredate"
-          placeholder="期限"
-          value={newCoupon.expiredate}
-          onChange={handleInputChange}
-          className="p-2 border border-gray-300 rounded mr-2"
-        />
-        <button onClick={addNewCoupon} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
-          クーポンを追加
-        </button>
-      </div>
-      <div className="mb-4">
-        <select onChange={handleCouponSelection} className="p-2 border border-gray-300 rounded mr-2">
-          <option value="">クーポンを選択</option>
-          {coupons.map((coupon) => (
-            <option key={coupon.id} value={coupon.id}>
-              {coupon.name}
-            </option>
-          ))}
-        </select>
-        <select onChange={handleTargetUserChange} className="p-2 border border-gray-300 rounded mr-2">
-  {generateTargetOptions(false)}
-</select>
+    <div>
+      <Navbar />
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">Coupons</h1>
+        <div className="mb-4">
+          <input
+            type="text"
+            name="name"
+            placeholder="クーポン名"
+            value={newCoupon.name}
+            onChange={handleInputChange}
+            className="p-2 border border-gray-300 rounded mr-2"
+          />
+          <input
+            type="text"
+            name="content"
+            placeholder="内容"
+            value={newCoupon.content}
+            onChange={handleInputChange}
+            className="p-2 border border-gray-300 rounded mr-2"
+          />
+          <input
+            type="text"
+            name="target"
+            placeholder="対象"
+            value={newCoupon.target}
+            onChange={handleInputChange}
+            className="p-2 border border-gray-300 rounded mr-2"
+          />
+          <input
+            type="text"
+            name="expiredate"
+            placeholder="期限"
+            value={newCoupon.expiredate}
+            onChange={handleInputChange}
+            className="p-2 border border-gray-300 rounded mr-2"
+          />
+          <button onClick={addNewCoupon} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
+            クーポンを追加
+          </button>
+        </div>
+        <div className="mb-4">
+          <select onChange={handleCouponSelection} className="p-2 border border-gray-300 rounded mr-2">
+            <option value="">クーポンを選択</option>
+            {coupons.map((coupon) => (
+              <option key={coupon.id} value={coupon.id}>
+                {coupon.name}
+              </option>
+            ))}
+          </select>
+          <select onChange={handleTargetUserChange} className="p-2 border border-gray-300 rounded mr-2">
+    {generateTargetOptions(false)}
+  </select>
 
-        <button onClick={distributeCoupon} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">
-          クーポンを配布
-        </button>
-      </div>
-      <table className="min-w-full border border-gray-300">
-      <thead>
-        <tr className="bg-gray-100">
-          <th className="border border-gray-300 p-2">ID</th>
-          <th className="border border-gray-300 p-2">名前</th>
-          <th className="border border-gray-300 p-2">内容</th>
-          <th className="border border-gray-300 p-2">期限</th>
-          <th className="border border-gray-300 p-2">対象</th>
-        </tr>
-      </thead>
-      <tbody>
-        {coupons.map((coupon) => (
-          <tr key={coupon.id}>
-            <td className="border border-gray-300 p-2">{coupon.id}</td>
-            <td className="border border-gray-300 p-2">{coupon.name}</td>
-            <td className="border border-gray-300 p-2">{coupon.content}</td>
-            <td className="border border-gray-300 p-2">{coupon.expiredate}</td>
-            <td className="border border-gray-300 p-2">{coupon.target}</td>
+          <button onClick={distributeCoupon} className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700">
+            クーポンを配布
+          </button>
+        </div>
+        <table className="min-w-full border border-gray-300">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="border border-gray-300 p-2">ID</th>
+            <th className="border border-gray-300 p-2">名前</th>
+            <th className="border border-gray-300 p-2">内容</th>
+            <th className="border border-gray-300 p-2">期限</th>
+            <th className="border border-gray-300 p-2">対象</th>
           </tr>
-        ))}
-      </tbody>
-      </table>
+        </thead>
+        <tbody>
+          {coupons.map((coupon) => (
+            <tr key={coupon.id}>
+              <td className="border border-gray-300 p-2">{coupon.id}</td>
+              <td className="border border-gray-300 p-2">{coupon.name}</td>
+              <td className="border border-gray-300 p-2">{coupon.content}</td>
+              <td className="border border-gray-300 p-2">{coupon.expiredate}</td>
+              <td className="border border-gray-300 p-2">{coupon.target}</td>
+            </tr>
+          ))}
+        </tbody>
+        </table>
+      </div>
     </div>
   );
 };
