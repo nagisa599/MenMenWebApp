@@ -107,9 +107,10 @@ const Coupon = () => {
   const handleCouponSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCouponId(e.target.value);
   };
-
-  const handleTargetUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTargetUser(e.target.value);
+  const handleTargetUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = e.target.value; // 選択された値を取得する例
+  
+    // ここで選択された値に対する処理を行う
   };
 
   const distributeCoupon = async () => {
@@ -120,7 +121,7 @@ const Coupon = () => {
     const couponRef = collection(db,'coupons')
     const specificCouponDocRef = doc(couponRef, selectedCouponId);
     const couponInfo = await getDoc(specificCouponDocRef);
-    const expire = couponInfo.data().expiredate;
+    const expire = couponInfo.data()?.expiredate;
     console.log(expire);
     const currentDate = new Date();
     const expirationDate = new Date();

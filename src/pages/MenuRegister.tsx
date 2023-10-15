@@ -85,7 +85,7 @@ const Menu = () => {
   
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files[0]; // 選択されたファイルを取得
+    const file = e.target.files?.[0]; // 選択されたファイルを取得
     if (file) {
       // Firebase Storageにアップロード
       const storage = getStorage();
