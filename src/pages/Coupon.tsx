@@ -11,7 +11,7 @@ interface Coupon {
   expiredate: string;
 }
 
-const Coupon: NextPage = () => {
+const Coupon = () => {
   const [coupons, setCoupon] = useState<Coupon[]>([]);
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     id: '',
