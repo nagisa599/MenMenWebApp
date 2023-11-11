@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getApp } from 'firebase/app';
 import { collection, addDoc, getFirestore, getDocs, query, getDoc, doc, setDoc } from 'firebase/firestore';
 import Navbar from '@/component/Navbar';
+import { useSession } from 'next-auth/react'
 
 interface Coupon {
   id: string;
@@ -22,6 +23,8 @@ const Coupon = () => {
   });
   const [selectedCouponId, setSelectedCouponId] = useState<string>('');
   const [targetUser, setTargetUser] = useState<string>('');
+  const { data: session } = useSession();
+
 
   const generateMonthOptions = () => {
     const months = [
@@ -141,6 +144,11 @@ const Coupon = () => {
       
 
   }))
+}
+if(!session) {
+  return <>
+    notLogin
+  </>
 }
 
   return (
