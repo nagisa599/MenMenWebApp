@@ -31,7 +31,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-blue-500">
+    <div className="in-h-screen flex items-center justify-center bg-blue-500">
       <div className="bg-white p-8 rounded shadow-md w-80">
         <h1 className="text-2xl font-semibold text-blue-500 mb-4">ログインページ</h1>
         <form onSubmit={onSubmit}>
