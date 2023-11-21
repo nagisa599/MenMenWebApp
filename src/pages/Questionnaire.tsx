@@ -1,106 +1,124 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getApp } from 'firebase/app';
+import { collection, addDoc, getFirestore, getDocs, query, getDoc, doc, setDoc } from 'firebase/firestore';
 import Navbar from '@/component/Navbar';
+import { useSession } from 'next-auth/react'
 
-interface Question {
-  text: string;
-  options: string[];
+interface Coupon {
+  url: string;
+  createdAt: string;
 }
 
-const CreateSurveyForm: React.FC = () => {
-  const [questions, setQuestions] = useState<Question[]>([{ text: '', options: [''] }]);
+const Coupon = () => {
+  const [urls, setUrl] = useState<Coupon[]>([]);
+  const [newUrl, setNewUrl] = useState<Coupon>({
+    url: '',
+    createdAt: '',
+  });
+  const { data: session } = useSession();
 
-  const handleQuestionChange = (index: number, text: string) => {
-    const newQuestions = [...questions];
-    newQuestions[index].text = text;
-    setQuestions(newQuestions);
+  const fetchCoupons = async () => {
+    try {
+      const db = getFirestore();
+      const couponsRef = collection(db, 'googleFormUrl');
+      const querySnapshot = await getDocs(couponsRef);
+      const couponData: Coupon[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+      
+        couponData.push({
+          url: data.url,
+          createdAt: data.createdAt.toDate().toISOString(),
+        });
+      });
+      setUrl(couponData);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleOptionChange = (questionIndex: number, optionIndex: number, value: string) => {
-    const newQuestions = [...questions];
-    newQuestions[questionIndex].options[optionIndex] = value;
-    setQuestions(newQuestions);
+  useEffect(() => {
+    fetchCoupons();
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewUrl({ ...newUrl, [name]: value });
   };
 
-  const addQuestion = () => {
-    setQuestions([...questions, { text: '', options: [''] }]);
+  const addnewUrl = async () => {
+    const createdAt= new Date();
+    try {
+      const db = getFirestore();
+      const couponsRef = collection(db, 'googleFormUrl');
+      console.log(couponsRef);
+      await addDoc(couponsRef, {
+        url: newUrl.url,
+        createdAt: createdAt,
+       
+      });
+      console.log('新しいクーポンが追加されました！');
+      // 新しいクーポンを追加した後にクーポン一覧を再取得
+      fetchCoupons();
+      // フォームをリセット
+      setNewUrl({
+        url: '',
+        createdAt: '',
+        
+      });
+    } catch (error) {
+      console.error('クーポンの追加に失敗しました:', error);
+    }
   };
 
-  const addOption = (questionIndex: number) => {
-    const newQuestions = [...questions];
-    newQuestions[questionIndex].options.push('');
-    setQuestions(newQuestions);
+  const handleTargetUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = e.target.value; // 選択された値を取得する例
+    // ここで選択された値に対する処理を行う
   };
 
-  const removeOption = (questionIndex: number, optionIndex: number) => {
-    const newQuestions = [...questions];
-    newQuestions[questionIndex].options.splice(optionIndex, 1);
-    setQuestions(newQuestions);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // ここでアンケートの送信処理を行う
-  };
 
   return (
     <div>
-    <Navbar />
-    <form onSubmit={handleSubmit}>
-      {questions.map((question, questionIndex) => (
-        <div key={questionIndex} className="mb-4 p-4 border border-gray-300 rounded">
-  <label className="block font-bold mb-2">質問 {questionIndex + 1}：</label>
-  <input
-    type="text"
-    value={question.text}
-    onChange={(e) => handleQuestionChange(questionIndex, e.target.value)}
-    required
-    className="w-1/2 p-2 border border-gray-300 rounded"
-  />
-  <div className="mt-2">
-    <label className="block font-bold mb-2">選択肢：</label>
-    {question.options.map((option, optionIndex) => (
-      <div key={optionIndex} className="flex items-center mb-2">
-        <input
-          type="text"
-          value={option}
-          onChange={(e) => handleOptionChange(questionIndex, optionIndex, e.target.value)}
-          required
-          className="w-60 p-2 border border-gray-300 rounded"
-        />
-        <button
-          type="button"
-          onClick={() => removeOption(questionIndex, optionIndex)}
-          className="ml-2 text-red-500"
-        >
-          削除
-        </button>
+      <Navbar />
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">GoogleFromで作成したURLを貼って追加してください</h1>
+        <div className="mb-4">
+          <input
+            type="text"
+            name="url"
+            placeholder="アンケートURL"
+            value={newUrl.url}
+            onChange={handleInputChange}
+            className="p-2 border border-gray-300 rounded mr-2"
+          />
+         
+      
+          <button onClick={addnewUrl} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
+            アンケート追加
+          </button>
+        </div>
+        <table className="min-w-full border border-gray-300">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="border border-gray-300 p-2">アンケートURL</th>
+            <th className="border border-gray-300 p-2">作成日</th>
+       
+          </tr>
+        </thead>
+        <tbody>
+          {urls.map((url) => (
+            <tr key={url.url}>
+              <td className="border border-gray-300 p-2">{url.url}</td>
+              <td className="border border-gray-300 p-2">{url.createdAt}</td>
+              
+            </tr>
+          ))}
+        </tbody>
+        </table>
       </div>
-    ))}
-    <button
-      type="button"
-      onClick={() => addOption(questionIndex)}
-      className="text-green-500"
-    >
-      選択肢追加
-    </button>
-  </div>
-</div>
-
-      ))}
-      <button
-  type="button"
-  onClick={() => addQuestion()}
-  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300"
->
-  質問追加
-</button>
-
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
-        アンケートを作成
-      </button>
-    </form>
     </div>
   );
 };
 
-export default CreateSurveyForm;
+export default Coupon;
+
