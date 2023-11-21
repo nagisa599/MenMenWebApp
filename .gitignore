@@ -35,4 +35,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-menmen-d01dd-firebase-adminsdk-ssmdv-c58b066d2c.json
+*.menmen-d01dd-firebase-adminsdk-ssmdv-c58b066d2c
