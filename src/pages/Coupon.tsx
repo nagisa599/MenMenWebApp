@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { getApp } from 'firebase/app';
 import { collection, addDoc, getFirestore, getDocs, query, getDoc, doc, setDoc } from 'firebase/firestore';
 import Navbar from '@/component/Navbar';
 import { useSession } from 'next-auth/react'
@@ -152,7 +151,7 @@ if(!session) {
 }
 
   return (
-    <div>
+    <div className="flex flex-col h-screen">
       <Navbar />
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Coupons</h1>

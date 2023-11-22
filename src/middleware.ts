@@ -10,6 +10,7 @@ const adminOnlyPathRegexs = [
 
 export default withAuth(
   function middleware(req) {
+    console.log('req:', req);
     const { pathname } = req.nextUrl;
 
     // 管理者権限のないユーザーが管理者権限が必要なパスにアクセスした場合は404
@@ -24,5 +25,5 @@ export default withAuth(
 
 export const config = {
   // ログインページ（/login）以外を対象にする
-  matcher: '/singin',
+  matcher: '/signin',
 };
