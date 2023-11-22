@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { getApp } from 'firebase/app';
-import { collection, addDoc, getFirestore, getDocs, getDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, getFirestore, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import Navbar from '@/component/Navbar';
-import { NextPage } from 'next';
 import Image from 'next/image';
 
 
@@ -254,7 +252,6 @@ const Menu = () => {
                     alt={menu.name}
                     width={100}
                     height={100}
-                    layout='responsie'
                   />
                 </td>
                 <td className="border border-gray-300 p-2">{menu.price}</td>

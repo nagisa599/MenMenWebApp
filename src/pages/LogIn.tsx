@@ -6,7 +6,7 @@ const Login = () => {
   const router = useRouter();
   const [mail, setMail] = useState("");
   const [password, setPassword] = useState("");
-  const session = useSession();
+  const { data: session, status } = useSession();
   const [error, setError] = useState("");
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -21,7 +21,7 @@ const Login = () => {
           console.log(res.error);
           setError("認証情報が正しくありません。");
         } else {
-          router.push('/Coupon');
+          router.push('/');
         }
       });
     } catch (err) {
@@ -29,6 +29,14 @@ const Login = () => {
 
     }
   };
+
+  if (status === "loading") {
+    return <p>Loading...</p>
+  }
+
+  if (status === "authenticated") {
+    router.push("/");
+  }
 
   return (
     <div className="in-h-screen flex items-center justify-center bg-blue-500">
