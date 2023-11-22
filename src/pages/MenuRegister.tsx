@@ -3,6 +3,8 @@ import { getApp } from 'firebase/app';
 import { collection, addDoc, getFirestore, getDocs, getDoc, doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import Navbar from '@/component/Navbar';
+import { NextPage } from 'next';
+import Image from 'next/image';
 
 
 interface Menu {
@@ -15,6 +17,7 @@ interface Menu {
   today: boolean;
   topping: boolean;
   price: number;
+  updatedAt: Date;
 }
 
 const Menu: NextPage = () => {
@@ -29,6 +32,7 @@ const Menu: NextPage = () => {
     today: false,
     topping: false,
     price: 0,
+    updatedAt: new Date(),
   });
 
   const fetchData = async () => {
@@ -54,6 +58,7 @@ const Menu: NextPage = () => {
           student: data.student,
           today: data.today,
           topping: data.topping,
+          updatedAt: data.updatedAt,
         })));
       });
 
@@ -85,15 +90,12 @@ const Menu: NextPage = () => {
   
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files[0]; // 選択されたファイルを取得
-    if (file) {
-      // Firebase Storageにアップロード
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+
       const storage = getStorage();
       const storageRef = ref(storage, `${file.name}`);
-      // const storageRef = ref(storage, `${process.env.FILEPATH}/${file.name}`);
       uploadBytes(storageRef, file).then((snapshot) => {
-        console.log('ファイルがアップロードされました');
-        // アップロードが完了したら、画像のURLを取得
         getDownloadURL(storageRef).then((url) => {
           setNewMenu({ ...newMenu, image: url });
         });
@@ -122,6 +124,7 @@ const Menu: NextPage = () => {
         today: newMenu.today,
         topping: newMenu.topping,
         favorite: newMenu.favorite,
+        updatedAt: newMenu.updatedAt,
       });
       console.log('新しいメニューが追加されました！');
       // 新しいメニューを追加した後にメニュー一覧を再取得
@@ -137,6 +140,7 @@ const Menu: NextPage = () => {
         today: false,
         topping: false,
         price: 0,
+        updatedAt: new Date(),
       });
     } catch (error) {
       console.error('メニューの追加に失敗しました:', error);
@@ -231,7 +235,6 @@ const Menu: NextPage = () => {
         <table className="min-w-full border border-gray-300">
           <thead className="sticky top-0 bg-gray-100">
             <tr className="bg-gray-100">
-              <th className="border border-gray-300 p-2">ID</th>
               <th className="border border-gray-300 p-2">名前</th>
               <th className="border border-gray-300 p-2">画像</th>
               <th className="border border-gray-300 p-2">値段</th>
@@ -245,16 +248,14 @@ const Menu: NextPage = () => {
           <tbody>
             {menus.map((menu) => (
               <tr key={menu.id}>
-                <td className="border border-gray-300 p-2">{menu.id}</td>
                 <td className="border border-gray-300 p-2">{menu.name}</td>
                 <td className="border border-gray-300 p-2">
-                  <img
+                  <Image
                     src={menu.image}
                     alt={menu.name}
-                    style={{
-                      maxWidth: 200,
-                      height: "auto",
-                    }}
+                    width={100}
+                    height={100}
+                    layout='responsie'
                   />
                 </td>
                 <td className="border border-gray-300 p-2">{menu.price}</td>
