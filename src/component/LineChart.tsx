@@ -2,14 +2,13 @@ import React from 'react';
 import { Line } from 'react-chartjs-2';
 import "chart.js/auto";
 
-
 const LineChart: React.FC = () => {
   const data = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    labels: ['８月', '9月', '10月', '11月', '12月', '1月'],
     datasets: [
       {
         label: 'Sales Data',
-        data: [12, 19, 3, 5, 2, 3],
+        data: [120, 190, 300, 100,124, 140],
         fill: false,
         borderColor: '#4CAF50',
         tension: 0.1,
@@ -26,8 +25,10 @@ const LineChart: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center mx-auto mt-8 w-full h-96"> 
-      <Line data={data} options={options} />
+    <div className="w-full h-full">
+      <div className="w-1/2 mx-auto mt-8">
+        <Line data={data} options={options} />
+      </div>
     </div>
   );
 };

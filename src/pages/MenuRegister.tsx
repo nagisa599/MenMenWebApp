@@ -20,7 +20,7 @@ interface Menu {
   updatedAt: Date;
 }
 
-const Menu: NextPage = () => {
+const Menu = () => {
   const [menus, setMenu] = useState<Menu[]>([]);
   const [newMenu, setNewMenu] = useState<Menu>({
     id: '',
@@ -92,7 +92,6 @@ const Menu: NextPage = () => {
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-
       const storage = getStorage();
       const storageRef = ref(storage, `${file.name}`);
       uploadBytes(storageRef, file).then((snapshot) => {

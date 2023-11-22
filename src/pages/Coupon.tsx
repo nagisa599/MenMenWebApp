@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getApp } from 'firebase/app';
 import { collection, addDoc, getFirestore, getDocs, query, getDoc, doc, setDoc } from 'firebase/firestore';
 import Navbar from '@/component/Navbar';
+import { useSession } from 'next-auth/react'
 
 interface Coupon {
   id: string;
@@ -11,7 +12,7 @@ interface Coupon {
   expiredate: string;
 }
 
-const Coupon: NextPage = () => {
+const Coupon = () => {
   const [coupons, setCoupon] = useState<Coupon[]>([]);
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     id: '',
@@ -22,6 +23,8 @@ const Coupon: NextPage = () => {
   });
   const [selectedCouponId, setSelectedCouponId] = useState<string>('');
   const [targetUser, setTargetUser] = useState<string>('');
+  const { data: session } = useSession();
+
 
   const generateMonthOptions = () => {
     const months = [
@@ -107,9 +110,10 @@ const Coupon: NextPage = () => {
   const handleCouponSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCouponId(e.target.value);
   };
-
-  const handleTargetUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTargetUser(e.target.value);
+  const handleTargetUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = e.target.value; // 選択された値を取得する例
+  
+    // ここで選択された値に対する処理を行う
   };
 
   const distributeCoupon = async () => {
@@ -120,7 +124,7 @@ const Coupon: NextPage = () => {
     const couponRef = collection(db,'coupons')
     const specificCouponDocRef = doc(couponRef, selectedCouponId);
     const couponInfo = await getDoc(specificCouponDocRef);
-    const expire = couponInfo.data().expiredate;
+    const expire = couponInfo.data()?.expiredate;
     console.log(expire);
     const currentDate = new Date();
     const expirationDate = new Date();
@@ -140,6 +144,11 @@ const Coupon: NextPage = () => {
       
 
   }))
+}
+if(!session) {
+  return <>
+    notLogin
+  </>
 }
 
   return (
