@@ -1,33 +1,45 @@
 import React from 'react';
 import 'chart.js/auto';
 import { Pie } from 'react-chartjs-2';
+import { MenuCountDictionary } from '@/pages/UserAnalysis';
 
 interface PieChartProps {
   title: string;
-  favorite: number[];
-  label: string[];
+  dict: MenuCountDictionary;
 }
 
-const calculatePercentage = (value: number, total: number): number => {
-  return (value / total) * 100;
+const generateRandomColor = (): string => {
+  // 16進数でランダムな色を生成
+  const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+  return `#${randomColor}`;
 };
 
-const PieChart: React.FC<PieChartProps> = ({ title, favorite, label }) => {
-  const totalRamen = favorite.reduce((acc, value) => acc + value, 0);
-  const percentages = favorite.map((ramenCount) =>
-    calculatePercentage(ramenCount, totalRamen)
-  );
-  const counts = favorite.map((ramenCount) => ramenCount);
+const generateColors = (length: number): string[] => {
+  const colors = [];
+  for (let i = 0; i < length; i++) {
+    colors.push(generateRandomColor());
+  }
+  return colors;
+};
+
+const PieChart: React.FC<PieChartProps> = ({ title, dict }) => {
+  const labels = Object.keys(dict);
+  const counts = Object.values(dict);
+  const total = counts.reduce((acc, value) => acc + value, 0);
+  const percentages = counts.map((count) => (count / total) * 100);
+
+  const colors = generateColors(labels.length);
 
   const data = {
-    labels: label,
+    labels: labels,
     datasets: [
       {
         data: percentages,
-        backgroundColor: ['#4CAF50', '#FFC107', '#2196F3', '#FF5722', '#9C27B0', '#FFFFF'],
+        backgroundColor: colors,
       },
     ],
   };
+
   const options = {
     plugins: {
       legend: {
@@ -35,11 +47,11 @@ const PieChart: React.FC<PieChartProps> = ({ title, favorite, label }) => {
       },
       tooltip: {
         callbacks: {
-          label: (context:any) => {
+          label: (context: any) => {
             const label = context.label || '';
             const value = context.parsed;
-            const count = counts[context.dataIndex]; // 対応する数値を取得
-            return `${label}: ${value.toFixed(0)}% (${count}件)`; // ラベルにパーセントの値と実際の数を追加
+            const count = counts[context.dataIndex];
+            return `${label}: ${value.toFixed(0)}% (${count}件)`;
           },
         },
       },
