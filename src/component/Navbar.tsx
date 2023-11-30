@@ -9,9 +9,9 @@ const Navbar: React.FC = () => {
         <Link href="/" className="p-1 text-white font-bold text-xl">MenMen管理サイト</Link>
         <div className="space-x-4">
           <Link href="/UserAnalysis" className="text-white hover:text-gray-300">分析</Link>
-          <Link href="/Coupon" className="text-white hover:text-gray-300">クーポン設定</Link>
+          <Link href="/Coupon" className="text-white hover:text-gray-300">クーポン</Link>
           <Link href="/Questionnaire" className="text-white hover:text-gray-300">アンケート</Link>
-          <Link href="/MenuRegister" className="text-white hover:text-gray-300">商品メニュー設定</Link>
+          <Link href="/Menu" className="text-white hover:text-gray-300">商品メニュー</Link>
           <button onClick={() => signOut()} className="text-white hover:text-gray-300">ログアウト</button>
         </div>
       </div>
