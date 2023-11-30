@@ -98,7 +98,7 @@ export default function Home() {
           </div>
         </div>
         <div className="mb-8">
-          <h2 className="text-lg font-semibold">本日の限定メニュー</h2>
+          <h2 className="text-lg font-semibold">本日の提供メニュー</h2>
           <div className="flex mt-2 gap-4">
             {imageUrls.map((imageUrl, index) => {
               return (
