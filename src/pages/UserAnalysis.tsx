@@ -5,74 +5,86 @@ import { collection, addDoc, getFirestore, getDocs, query, getDoc, doc, setDoc }
 import Navbar from '@/component/Navbar';
 import { closeSync } from 'fs';
 
+interface MenuNameDictionary {
+  [key: string]: string;
+}
 
-const Home: React.FC = () => {
-  const toppingLabel = ['チーズ','明太子','のり','ねぎ','うずら','七味'];
-  const ramenLabel = ['ラーメン','まぜそば','汁なし','カレー','つけ麺','モクヨージャンク'];
-  const [favoriteRamen, setFavoriteRamen] = useState([0, 0, 0, 0, 0, 0])
-  const [favoriteTopping,setFavoriteTopping] = useState([0,0,0,0,0,0]);
-  const [isLoading,setIsLoading] = useState(true);
+export interface MenuCountDictionary {
+  [key: string]: number;
+}
 
-  const userFetchData = async () => {
+const Analyze: React.FC = () => {
+  const [favoriteRamen, setFavoriteRamen] = useState<MenuCountDictionary>({})
+  const [favoriteTopping, setFavoriteTopping] = useState<MenuCountDictionary>({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  // idとメニュー名の辞書を作成
+  const FetchMenuData = async () => {
+    const db = getFirestore();
+    const ramensCollection = collection(db, 'ramens');
+    const ramensQuerySnapshot = await getDocs(ramensCollection);
+
+    const ramenDict: MenuNameDictionary = {};
+    await Promise.all(ramensQuerySnapshot.docs.map(async (doc) => {
+      const data = doc.data();
+      ramenDict[doc.id] = data.name;
+    }));
+
+    return ramenDict;
+  }
+
+  // userの好みのラーメンとトッピングを辞書に格納
+  const countUserPreferences = async () => {
+    const menuDict = await FetchMenuData();
+    const ramenCount: MenuCountDictionary = {};
+    const toppingCount: MenuCountDictionary = {};
+
     const db = getFirestore();
     const usersCollection = collection(db, 'users');
     const querySnapshot = await getDocs(usersCollection);
-    
-    const updatedFavoriteRamen = [...favoriteRamen]; // 配列をコピー
-    const updatedFavoriteTopping = [...favoriteTopping]; // 配列をコピー
     await Promise.all(querySnapshot.docs.map(async (user) => {
       const uid = user.id;
       const userRef = doc(db, `users/${uid}/`);
       const docSnap = await getDoc(userRef);
       const ramen = docSnap.data()?.ramen;
       const topping = docSnap.data()?.topping;
-      if (ramen === 1) {
-        updatedFavoriteRamen[0] += 1;
-      } else if (ramen === 2) {
-        updatedFavoriteRamen[1] += 1;
-      } else if (ramen === 3) {
-        updatedFavoriteRamen[2] += 1;
-      } else if (ramen === 4) {
-        updatedFavoriteRamen[3] += 1;
-      } else if (ramen === 5) {
-        updatedFavoriteRamen[4] += 1;
-      } else {
-        updatedFavoriteRamen[5] += 1;
+
+      if (menuDict[ramen]) {
+        ramenCount[menuDict[ramen]] = (ramenCount[menuDict[ramen]] || 0) + 1;
       }
 
-      if (topping === 50) {
-        updatedFavoriteTopping[0] += 1;
-      } else if (topping === 51) {
-        updatedFavoriteTopping[1] += 1;
-      } else if (topping === 52) {
-        updatedFavoriteTopping[2] += 1;
-      } else if (topping === 53) {
-        updatedFavoriteTopping[3] += 1;
-      } else if (topping === 54) {
-        updatedFavoriteTopping[4] += 1;
-      } else {
-        updatedFavoriteTopping[5] += 1;
+      if (menuDict[topping]) {
+        toppingCount[menuDict[topping]] = (toppingCount[menuDict[topping]] || 0) + 1;
       }
-    }));
-    
-    setFavoriteRamen(updatedFavoriteRamen);
-    setFavoriteTopping(updatedFavoriteTopping);
+    }))
+    setFavoriteRamen(ramenCount);
+    setFavoriteTopping(toppingCount);
     setIsLoading(false);
-  };
-  useEffect(()=>{
-   userFetchData();
-   setIsLoading(false);
+  }
+
+  useEffect(() => {
+    countUserPreferences();
+    setIsLoading(false);
   }, []);
+
   return (
     <div>
       <Navbar />
-      <div className="w-full h-full flex flex-row items-center justify-center">
-        <PieChart title="お客様のお好みラーメン"favorite={favoriteRamen} label={ramenLabel}/>
-        <PieChart title="お客様のお好みtopping"favorite={favoriteTopping} label={toppingLabel}/>
-      </div>
-      <LineChart />
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <div>
+          <div className="w-full h-full flex flex-row items-center justify-center">
+            <PieChart title="お客様のお好みラーメン" dict={favoriteRamen} />
+            <PieChart title="お客様のお好みtopping" dict={favoriteTopping} />
+          </div>
+          <div>
+            <LineChart />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Home;
+export default Analyze;
