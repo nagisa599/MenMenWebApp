@@ -16,25 +16,6 @@ export default function Home() {
   const year = today.getFullYear();
   const dayName = weekdays[today.getDay()];
 
-  const [selectedRamen, setSelectedRamen] = useState('');
-  const [selectedTopping, setSelectedTopping] = useState('');
-
-  // プルダウンメニューの選択肢
-  const ramenOptions = ['ラーメン1', 'ラーメン2', 'ラーメン3']; // 仮データ
-  const toppingOptions = ['トッピング1', 'トッピング2', 'トッピング3']; // 仮データ
-
-  const handleRamenChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
-    setSelectedRamen(e.target.value);
-  };
-
-  const handleToppingChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
-    setSelectedTopping(e.target.value);
-  };
-
-  const handleSubmit = () => {
-    // Firebaseに選択されたラーメンとトッピングを登録
-  };
-
   useEffect(() => {
     const db = getFirestore();
     const storage = getStorage();
@@ -85,7 +66,7 @@ export default function Home() {
     Promise.all([setHeaderTitle(), setTodayMenu()]);
   }, []);
 
-  
+
   return (
     <div className="flex flex-col h-screen">
       <Navbar />
@@ -103,11 +84,11 @@ export default function Home() {
             {imageUrls.map((imageUrl, index) => {
               return (
                 <div key={index} className="flex flex-col items-center">
-                  <Image 
-                    src={imageUrl} 
+                  <Image
+                    src={imageUrl}
                     alt={ramenNames[index]}
-                    width={150} 
-                    height={150} 
+                    width={150}
+                    height={150}
                   />
                   <p>{ramenNames[index]}</p>
                 </div>
@@ -115,36 +96,6 @@ export default function Home() {
             })}
           </div>
         </div>
-        <div className="mb-6">
-        <h2 className="text-lg font-semibold">翌日の限定メニューを設定</h2>
-        <div className="flex mt-4">
-          <div className="mr-2">
-            <select
-              value={selectedRamen}
-              onChange={handleRamenChange}
-              className="p-2 border border-gray-300 rounded"
-            >
-              {ramenOptions.map((option) => (
-                <option key={option} value={option}>{option}</option>
-              ))}
-            </select>
-          </div>
-          <div className="mr-2">
-            <select
-              value={selectedTopping}
-              onChange={handleToppingChange}
-              className="p-2 border border-gray-300 rounded"
-            >
-              {toppingOptions.map((option) => (
-                <option key={option} value={option}>{option}</option>
-              ))}
-            </select>
-          </div>
-          <button onClick={handleSubmit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            確認
-          </button>
-        </div>
-      </div>
       </div>
     </div>
   )
