@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, getFirestore, getDocs } from 'firebase/firestore';
-import { getStorage, ref, getDownloadURL, uploadBytes } from 'firebase/storage';
+import { collection, getFirestore, getDocs } from 'firebase/firestore';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import Navbar from '@/component/Navbar';
-import Image from 'next/image';
-import MenuForm from '@/component/MenuForm';
 import MenuTable from '@/component/MenuTable';
 import { Menu } from '@/interfaces/Menu';
 import Link from 'next/link';
 
-const Menu = () => {
+const MenuPage = () => {
   const [menus, setMenu] = useState<Menu[]>([]);
 
   const fetchData = async () => {
@@ -81,4 +79,4 @@ const Menu = () => {
   );
 };
 
-export default Menu;
+export default MenuPage;
