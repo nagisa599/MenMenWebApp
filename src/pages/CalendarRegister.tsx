@@ -1,16 +1,17 @@
 import Navbar from "@/component/Navbar";
 import React, { useState } from "react";
 import Link from "next/link";
-import { addDoc, collection, getFirestore } from "firebase/firestore";
+import { addDoc, collection, getDocs, getFirestore, query, updateDoc, where, doc } from "firebase/firestore";
 import CalendarComponent from "@/component/Calendar";
 
-interface dayProps {
-  [key: string]: boolean
+interface openTime {
+  start: string; // 開始時間
+  end: string;   // 終了時間
 }
 
 interface BusinessHours {
-  start: string; // 開始時間
-  end: string;   // 終了時間
+  lunch: openTime; // 開始時間
+  dinner: openTime;   // 終了時間
 }
 
 // 曜日ごとの営業時間を格納するためのオブジェクトの型定義
@@ -25,16 +26,30 @@ const CalendarForm: React.FC = () => {
   const [year, setYear] = useState<string>();
   const [closedDays, setClosedDays] = useState<Date[]>([]);
   const [businessHours, setBusinessHours] = useState<BusinessHoursByDay>({
-    weekday: { start: '', end: '' },
-    saturday: { start: '', end: '' },
-    sunday: { start: '', end: '' },
+    weekday: { lunch: { start: '', end: '' }, dinner: { start: '', end: '' } },
+    saturday: { lunch: { start: '', end: '' }, dinner: { start: '', end: '' } },
+    sunday: { lunch: { start: '', end: '' }, dinner: { start: '', end: '' } },
   });
 
+  const formatDate = (date: Date) => {
+    const month = date.getMonth() + 1; // 月は0から始まるので1を足す
+    const day = date.getDate();
+    return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`;
+  };
+
   // 営業時間の更新を行う関数
-  const handleBusinessHoursChange = (day: keyof BusinessHoursByDay, key: keyof BusinessHours, value: string) => {
+  const handleBusinessHoursChange = (
+    day: keyof BusinessHoursByDay,
+    time: 'lunch' | 'dinner',
+    key: keyof openTime,
+    value: string
+  ) => {
     setBusinessHours(prev => ({
       ...prev,
-      [day]: { ...prev[day], [key]: value }
+      [day]: {
+        ...prev[day],
+        [time]: { ...prev[day][time], [key]: value }
+      }
     }));
   };
 
@@ -42,18 +57,40 @@ const CalendarForm: React.FC = () => {
     try {
       const db = getFirestore();
       const calendarRef = collection(db, 'calendar');
+      const q = query(calendarRef, where('year', '==', Number(year)), where('month', '==', Number(month)));
+      const querySnapshot = await getDocs(q);
+      let docExists = false;
+      let docId = '';
 
-      await addDoc(calendarRef, {
-        year: Number(year),
-        month: Number(month),
-        dayoff: closedDays,
-        businessHours: businessHours,
+      querySnapshot.forEach((doc) => {
+        docExists = true;
+        docId = doc.id;
       });
 
+      const sortedClosedDays = closedDays
+        .map(timestamp => new Date(timestamp)) // タイムスタンプをDateオブジェクトに変換
+        .sort((a, b) => a.getTime() - b.getTime()) // Dateオブジェクトでソート
+        .map(date => formatDate(date)); // 日付を文字列に変換
+
+      if (docExists) {
+        const docRef = doc(db, 'calendar', docId);
+        await updateDoc(docRef, {
+          dayoff: sortedClosedDays,
+          businessHours: businessHours,
+        });
+      } else {
+        await addDoc(calendarRef, {
+          year: Number(year),
+          month: Number(month),
+          dayoff: sortedClosedDays,
+          businessHours: businessHours,
+        });
+      }
+
       setBusinessHours({
-        weekday: { start: '', end: '' },
-        saturday: { start: '', end: '' },
-        sunday: { start: '', end: '' },
+        weekday: { lunch: { start: '', end: '' }, dinner: { start: '', end: '' } },
+        saturday: { lunch: { start: '', end: '' }, dinner: { start: '', end: '' } },
+        sunday: { lunch: { start: '', end: '' }, dinner: { start: '', end: '' } },
       });
       setClosedDays([]);
       setMonth('');
@@ -96,24 +133,115 @@ const CalendarForm: React.FC = () => {
               <div className="my-3">
                 <label className="text-md font-semibold block mb-2">営業カレンダー入力</label>
                 <div className="mb-3">
-                  <label className="block mb-1">平日</label>
-                  <div className="flex space-x-2">
-                    <input className="flex-1 p-2 border border-gray-300 rounded" type="time" placeholder="開始時間" value={businessHours.weekday.start} onChange={(e) => handleBusinessHoursChange('weekday', 'start', e.target.value)} />
-                    <input className="flex-1 p-2 border border-gray-300 rounded" type="time" placeholder="終了時間" value={businessHours.weekday.end} onChange={(e) => handleBusinessHoursChange('weekday', 'end', e.target.value)} />
+                  <label className="block mb-1 font-bold">平日</label>
+                  <div className="mb-2">
+                    <label className="block mb-1">昼の営業時間</label>
+                    <div className="flex space-x-2">
+                      <input
+                        className="flex-1 p-2 border border-gray-300 rounded"
+                        type="time"
+                        value={businessHours.weekday.lunch.start}
+                        onChange={(e) => handleBusinessHoursChange('weekday', 'lunch', 'start', e.target.value)}
+                      />
+                      <input
+                        className="flex-1 p-2 border border-gray-300 rounded"
+                        type="time"
+                        value={businessHours.weekday.lunch.end}
+                        onChange={(e) => handleBusinessHoursChange('weekday', 'lunch', 'end', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-2">
+                    <label className="block mb-1">夜の営業時間</label>
+                    <div className="flex space-x-2">
+                      <input
+                        className="flex-1 p-2 border border-gray-300 rounded"
+                        type="time"
+                        value={businessHours.weekday.dinner.start}
+                        onChange={(e) => handleBusinessHoursChange('weekday', 'dinner', 'start', e.target.value)}
+                      />
+                      <input
+                        className="flex-1 p-2 border border-gray-300 rounded"
+                        type="time"
+                        value={businessHours.weekday.dinner.end}
+                        onChange={(e) => handleBusinessHoursChange('weekday', 'dinner', 'end', e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="mb-3">
-                  <label className="block mb-1">土曜</label>
-                  <div className="flex space-x-2">
-                    <input className="flex-1 p-2 border border-gray-300 rounded" type="time" placeholder="開始時間" value={businessHours.saturday.start} onChange={(e) => handleBusinessHoursChange('saturday', 'start', e.target.value)} />
-                    <input className="flex-1 p-2 border border-gray-300 rounded" type="time" placeholder="終了時間" value={businessHours.saturday.end} onChange={(e) => handleBusinessHoursChange('saturday', 'end', e.target.value)} />
+                  <label className="block mb-1 font-bold">土曜</label>
+                  <div className="mb-2">
+                    <label className="block mb-1">昼の営業時間</label>
+                    <div className="flex space-x-2">
+                      <input
+                        className="flex-1 p-2 border border-gray-300 rounded"
+                        type="time"
+                        value={businessHours.saturday.lunch.start}
+                        onChange={(e) => handleBusinessHoursChange('saturday', 'lunch', 'start', e.target.value)}
+                      />
+                      <input
+                        className="flex-1 p-2 border border-gray-300 rounded"
+                        type="time"
+                        value={businessHours.saturday.lunch.end}
+                        onChange={(e) => handleBusinessHoursChange('saturday', 'lunch', 'end', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-2">
+                    <label className="block mb-1">夜の営業時間</label>
+                    <div className="flex space-x-2">
+                      <input
+                        className="flex-1 p-2 border border-gray-300 rounded"
+                        type="time"
+                        value={businessHours.saturday.dinner.start}
+                        onChange={(e) => handleBusinessHoursChange('saturday', 'dinner', 'start', e.target.value)}
+                      />
+                      <input
+                        className="flex-1 p-2 border border-gray-300 rounded"
+                        type="time"
+                        value={businessHours.saturday.dinner.end}
+                        onChange={(e) => handleBusinessHoursChange('saturday', 'dinner', 'end', e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
+
                 <div>
-                  <label className="block mb-1">日曜</label>
-                  <div className="flex space-x-2">
-                    <input className="flex-1 p-2 border border-gray-300 rounded" type="time" placeholder="開始時間" value={businessHours.sunday.start} onChange={(e) => handleBusinessHoursChange('sunday', 'start', e.target.value)} />
-                    <input className="flex-1 p-2 border border-gray-300 rounded" type="time" placeholder="終了時間" value={businessHours.sunday.end} onChange={(e) => handleBusinessHoursChange('sunday', 'end', e.target.value)} />
+                  <label className="block mb-1 font-bold">日曜</label>
+                  <div className="mb-2">
+                    <label className="block mb-1">昼の営業時間</label>
+                    <div className="flex space-x-2">
+                      <input
+                        className="flex-1 p-2 border border-gray-300 rounded"
+                        type="time"
+                        value={businessHours.sunday.lunch.start}
+                        onChange={(e) => handleBusinessHoursChange('sunday', 'lunch', 'start', e.target.value)}
+                      />
+                      <input
+                        className="flex-1 p-2 border border-gray-300 rounded"
+                        type="time"
+                        value={businessHours.sunday.lunch.end}
+                        onChange={(e) => handleBusinessHoursChange('sunday', 'lunch', 'end', e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="mb-2">
+                    <label className="block mb-1">夜の営業時間</label>
+                    <div className="flex space-x-2">
+                      <input
+                        className="flex-1 p-2 border border-gray-300 rounded"
+                        type="time"
+                        value={businessHours.sunday.dinner.start}
+                        onChange={(e) => handleBusinessHoursChange('sunday', 'dinner', 'start', e.target.value)}
+                      />
+                      <input
+                        className="flex-1 p-2 border border-gray-300 rounded"
+                        type="time"
+                        value={businessHours.sunday.dinner.end}
+                        onChange={(e) => handleBusinessHoursChange('sunday', 'dinner', 'end', e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
