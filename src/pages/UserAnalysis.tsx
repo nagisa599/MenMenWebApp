@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import LineChart from '../component/LineChart';
 import PieChart from '../component/PieChart';
-import { collection, addDoc, getFirestore, getDocs, query, getDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, getFirestore, getDocs, getDoc, doc } from 'firebase/firestore';
 import Navbar from '@/component/Navbar';
-import { closeSync } from 'fs';
+import ComingPeople from '@/component/ComingPeople';
+import Ranking from '@/component/Ranking';
 
 interface MenuNameDictionary {
   [key: string]: string;
@@ -74,12 +75,19 @@ const Analyze: React.FC = () => {
         <p>Loading...</p>
       ) : (
         <div>
-          <div className="w-full h-full flex flex-row items-center justify-center">
-            <PieChart title="お客様のお好みラーメン" dict={favoriteRamen} />
-            <PieChart title="お客様のお好みtopping" dict={favoriteTopping} />
+          <div className="w-9/12 h-9/12 mx-auto my-12">
+            <h2 className="text-2xl font-bold text-center mb-4">人気度調査</h2>
+            <div className="flex flex-row items-center justify-center">
+              <PieChart title="お客様のお好みラーメン" dict={favoriteRamen} />
+              <PieChart title="お客様のお好みtopping" dict={favoriteTopping} />
+            </div>
           </div>
-          <div>
-            <LineChart />
+          <div className="w-9/12 h-9/12 mx-auto my-12">
+            <h2 className="text-2xl font-bold text-center mb-4">来店人数</h2>
+            <ComingPeople />
+          </div>
+          <div className="w-9/12 h-9/12 mx-auto my-12">
+            <Ranking />
           </div>
         </div>
       )}
