@@ -1,4 +1,3 @@
-import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import React, { useState } from 'react';
 import MenuForm from '@/component/MenuForm'
 import { getStorage, uploadBytes, getDownloadURL, ref } from 'firebase/storage';
@@ -35,8 +34,6 @@ export default function MenuRegister() {
         favorite: Number(newMenu.favorite),
         updatedAt: newMenu.updatedAt,
       });
-      console.log('新しいメニューが追加されました！');
-      // フォームをリセット
       setNewMenu({
         id: '',
         name: '',
