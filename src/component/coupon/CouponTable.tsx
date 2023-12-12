@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { Coupon } from '@/interfaces/Coupon';
+import { Coupon } from '@/interfaces/coupon/Coupon';
 import { formatDateToYYMMDD } from "@/utils/DateFormat";
 
 interface CouponTableProps {

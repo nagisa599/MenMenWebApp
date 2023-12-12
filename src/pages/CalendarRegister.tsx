@@ -2,7 +2,7 @@ import Navbar from "@/component/Navbar";
 import React, { useState } from "react";
 import Link from "next/link";
 import { addDoc, collection, getDocs, getFirestore, query, updateDoc, where, doc } from "firebase/firestore";
-import CalendarComponent from "@/component/Calendar";
+import CalendarComponent from "@/component/setting/Calendar";
 
 interface openTime {
   start: string; // 開始時間
@@ -10,15 +10,21 @@ interface openTime {
 }
 
 interface BusinessHours {
-  lunch: openTime; // 開始時間
-  dinner: openTime;   // 終了時間
+  lunch: openTime;
+  dinner: openTime;
 }
 
-// 曜日ごとの営業時間を格納するためのオブジェクトの型定義
 interface BusinessHoursByDay {
   weekday: BusinessHours;
   saturday: BusinessHours;
   sunday: BusinessHours;
+}
+
+interface BusinessHoursChangeProps {
+  day: keyof BusinessHoursByDay,
+  time: 'lunch' | 'dinner',
+  key: keyof openTime,
+  value: string
 }
 
 const CalendarForm: React.FC = () => {
@@ -32,32 +38,25 @@ const CalendarForm: React.FC = () => {
   });
 
   const formatDate = (date: Date) => {
-    const month = date.getMonth() + 1; // 月は0から始まるので1を足す
+    const month = date.getMonth() + 1;
     const day = date.getDate();
     return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`;
   };
 
   // 営業時間の更新を行う関数
-  const handleBusinessHoursChange = (
-    day: keyof BusinessHoursByDay,
-    time: 'lunch' | 'dinner',
-    key: keyof openTime,
-    value: string
-  ) => {
+  const handleBusinessHoursChange = (props: BusinessHoursChangeProps) => {
     setBusinessHours(prev => ({
       ...prev,
-      [day]: {
-        ...prev[day],
-        [time]: { ...prev[day][time], [key]: value }
+      [props.day]: {
+        ...prev[props.day],
+        [props.time]: { ...prev[props.day][props.time], [props.key]: props.value }
       }
     }));
   };
 
   const registerCalendar = async () => {
     try {
-      const db = getFirestore();
-      const calendarRef = collection(db, 'calendar');
-      const q = query(calendarRef, where('year', '==', Number(year)), where('month', '==', Number(month)));
+      const q = query(collection(getFirestore(), 'calendar'), where('year', '==', Number(year)), where('month', '==', Number(month)));
       const querySnapshot = await getDocs(q);
       let docExists = false;
       let docId = '';
@@ -73,13 +72,12 @@ const CalendarForm: React.FC = () => {
         .map(date => formatDate(date)); // 日付を文字列に変換
 
       if (docExists) {
-        const docRef = doc(db, 'calendar', docId);
-        await updateDoc(docRef, {
+        await updateDoc(doc(getFirestore(), 'calendar', docId), {
           dayoff: sortedClosedDays,
           businessHours: businessHours,
         });
       } else {
-        await addDoc(calendarRef, {
+        await addDoc(collection(getFirestore(), 'calendar'), {
           year: Number(year),
           month: Number(month),
           dayoff: sortedClosedDays,
@@ -99,10 +97,6 @@ const CalendarForm: React.FC = () => {
       console.log(e);
     }
   };
-
-  const handleSubmit = () => {
-    registerCalendar();
-  }
 
   return (
     <div className="mb-5">
@@ -141,13 +135,13 @@ const CalendarForm: React.FC = () => {
                         className="flex-1 p-2 border border-gray-300 rounded"
                         type="time"
                         value={businessHours.weekday.lunch.start}
-                        onChange={(e) => handleBusinessHoursChange('weekday', 'lunch', 'start', e.target.value)}
+                        onChange={(e) => handleBusinessHoursChange({ day: 'weekday', time: 'lunch', key: 'start', value: e.target.value })}
                       />
                       <input
                         className="flex-1 p-2 border border-gray-300 rounded"
                         type="time"
                         value={businessHours.weekday.lunch.end}
-                        onChange={(e) => handleBusinessHoursChange('weekday', 'lunch', 'end', e.target.value)}
+                        onChange={(e) => handleBusinessHoursChange({ day: 'weekday', time: 'lunch', key: 'end', value: e.target.value })}
                       />
                     </div>
                   </div>
@@ -158,13 +152,13 @@ const CalendarForm: React.FC = () => {
                         className="flex-1 p-2 border border-gray-300 rounded"
                         type="time"
                         value={businessHours.weekday.dinner.start}
-                        onChange={(e) => handleBusinessHoursChange('weekday', 'dinner', 'start', e.target.value)}
+                        onChange={(e) => handleBusinessHoursChange({ day: 'weekday', time: 'dinner', key: 'start', value: e.target.value })}
                       />
                       <input
                         className="flex-1 p-2 border border-gray-300 rounded"
                         type="time"
                         value={businessHours.weekday.dinner.end}
-                        onChange={(e) => handleBusinessHoursChange('weekday', 'dinner', 'end', e.target.value)}
+                        onChange={(e) => handleBusinessHoursChange({ day: 'weekday', time: 'dinner', key: 'end', value: e.target.value })}
                       />
                     </div>
                   </div>
@@ -178,13 +172,13 @@ const CalendarForm: React.FC = () => {
                         className="flex-1 p-2 border border-gray-300 rounded"
                         type="time"
                         value={businessHours.saturday.lunch.start}
-                        onChange={(e) => handleBusinessHoursChange('saturday', 'lunch', 'start', e.target.value)}
+                        onChange={(e) => handleBusinessHoursChange({ day: 'saturday', time: 'lunch', key: 'start', value: e.target.value })}
                       />
                       <input
                         className="flex-1 p-2 border border-gray-300 rounded"
                         type="time"
                         value={businessHours.saturday.lunch.end}
-                        onChange={(e) => handleBusinessHoursChange('saturday', 'lunch', 'end', e.target.value)}
+                        onChange={(e) => handleBusinessHoursChange({ day: 'saturday', time: 'lunch', key: 'end', value: e.target.value })}
                       />
                     </div>
                   </div>
@@ -195,13 +189,13 @@ const CalendarForm: React.FC = () => {
                         className="flex-1 p-2 border border-gray-300 rounded"
                         type="time"
                         value={businessHours.saturday.dinner.start}
-                        onChange={(e) => handleBusinessHoursChange('saturday', 'dinner', 'start', e.target.value)}
+                        onChange={(e) => handleBusinessHoursChange({ day: 'saturday', time: 'dinner', key: 'start', value: e.target.value })}
                       />
                       <input
                         className="flex-1 p-2 border border-gray-300 rounded"
                         type="time"
                         value={businessHours.saturday.dinner.end}
-                        onChange={(e) => handleBusinessHoursChange('saturday', 'dinner', 'end', e.target.value)}
+                        onChange={(e) => handleBusinessHoursChange({ day: 'saturday', time: 'dinner', key: 'end', value: e.target.value })}
                       />
                     </div>
                   </div>
@@ -216,13 +210,13 @@ const CalendarForm: React.FC = () => {
                         className="flex-1 p-2 border border-gray-300 rounded"
                         type="time"
                         value={businessHours.sunday.lunch.start}
-                        onChange={(e) => handleBusinessHoursChange('sunday', 'lunch', 'start', e.target.value)}
+                        onChange={(e) => handleBusinessHoursChange({ day: 'sunday', time: 'lunch', key: 'start', value: e.target.value })}
                       />
                       <input
                         className="flex-1 p-2 border border-gray-300 rounded"
                         type="time"
                         value={businessHours.sunday.lunch.end}
-                        onChange={(e) => handleBusinessHoursChange('sunday', 'lunch', 'end', e.target.value)}
+                        onChange={(e) => handleBusinessHoursChange({ day: 'sunday', time: 'lunch', key: 'end', value: e.target.value })}
                       />
                     </div>
                   </div>
@@ -233,13 +227,13 @@ const CalendarForm: React.FC = () => {
                         className="flex-1 p-2 border border-gray-300 rounded"
                         type="time"
                         value={businessHours.sunday.dinner.start}
-                        onChange={(e) => handleBusinessHoursChange('sunday', 'dinner', 'start', e.target.value)}
+                        onChange={(e) => handleBusinessHoursChange({ day: 'sunday', time: 'dinner', key: 'start', value: e.target.value })}
                       />
                       <input
                         className="flex-1 p-2 border border-gray-300 rounded"
                         type="time"
                         value={businessHours.sunday.dinner.end}
-                        onChange={(e) => handleBusinessHoursChange('sunday', 'dinner', 'end', e.target.value)}
+                        onChange={(e) => handleBusinessHoursChange({ day: 'sunday', time: 'dinner', key: 'end', value: e.target.value })}
                       />
                     </div>
                   </div>
@@ -251,7 +245,7 @@ const CalendarForm: React.FC = () => {
             <div className="flex justify-end mt-4">
               <button
                 className="text-white px-8 py-2 font-black rounded bg-indigo-600 hover:bg-indigo-700"
-                onClick={handleSubmit}
+                onClick={registerCalendar}
               >
                 登録
               </button>

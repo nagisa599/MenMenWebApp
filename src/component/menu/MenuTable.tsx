@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { Menu } from '@/interfaces/Menu';
+import { Menu } from '@/interfaces/menu/Menu';
 
 interface MenuTableProps {
   menus: Menu[];

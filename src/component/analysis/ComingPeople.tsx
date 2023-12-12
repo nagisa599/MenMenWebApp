@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Timestamp } from "firebase/firestore";
 import { collection, getDocs, getFirestore, query, where } from "firebase/firestore";
 
-
 const ComingPeople: React.FC = () => {
   const [yesterdayPeople, setYesterdayPeople] = useState<number>(0);
   const [todayPeople, setTodayPeople] = useState<number>(0);
@@ -15,12 +14,12 @@ const ComingPeople: React.FC = () => {
   yesterday.setDate(yesterday.getDate() - 1);
 
   const fetchPeopleData = async () => {
-    const db = getFirestore();
-    const visitsRef = collection(db, 'visits');
-    const yesterdayCount = query(visitsRef, where('visitDate', '>=', Timestamp.fromDate(yesterday)), where('visitDate', '<', Timestamp.fromDate(today)))
-    const todayCount = query(visitsRef, where('visitDate', '>=', Timestamp.fromDate(today)), where('visitDate', '<', Timestamp.fromDate(tomorrow)))
-    const yesterdayQuerySnapshot = await getDocs(yesterdayCount);
-    const todayQuerySnapshot = await getDocs(todayCount);
+    const yesterdayCount = query(collection(getFirestore(), 'visits'), where('visitDate', '>=', Timestamp.fromDate(yesterday)), where('visitDate', '<', Timestamp.fromDate(today)))
+    const todayCount = query(collection(getFirestore(), 'visits'), where('visitDate', '>=', Timestamp.fromDate(today)), where('visitDate', '<', Timestamp.fromDate(tomorrow)))
+    const [yesterdayQuerySnapshot, todayQuerySnapshot] = await Promise.all([
+      getDocs(yesterdayCount),
+      getDocs(todayCount)
+    ]);
     setYesterdayPeople(yesterdayQuerySnapshot.size);
     setTodayPeople(todayQuerySnapshot.size);
   }

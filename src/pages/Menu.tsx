@@ -2,26 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { collection, getFirestore, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import Navbar from '@/component/Navbar';
-import MenuTable from '@/component/MenuTable';
-import { Menu } from '@/interfaces/Menu';
+import MenuTable from '@/component/menu/MenuTable';
+import { Menu } from '@/interfaces/menu/Menu';
 import Link from 'next/link';
 
-const MenuPage = () => {
+const MenuPage: React.FC = () => {
   const [menus, setMenu] = useState<Menu[]>([]);
 
   const fetchData = async () => {
     try {
-      const db = getFirestore();
-      const menusRef = collection(db, 'ramens');
-      const querySnapshot = await getDocs(menusRef);
+      const querySnapshot = await getDocs(collection(getFirestore(), 'ramens'));
       const menuDataPromises: Promise<Menu>[] = [];
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        const imageRef = ref(getStorage(), `${data.imageURL}`);
-        const imageUrlPromise = getDownloadURL(imageRef);
+        const imageUrlPromise = getDownloadURL(ref(getStorage(), `${data.imageURL}`));
 
-        // 画像URLの取得をPromiseで保持
         menuDataPromises.push(imageUrlPromise.then((imageUrl) => ({
           id: doc.id,
           name: data.name,
@@ -36,7 +32,6 @@ const MenuPage = () => {
         })));
       });
 
-      // すべてのデータを非同期で取得
       const menuData = await Promise.all(menuDataPromises);
 
       // topping が false のデータを前にするために、true と false の順に並び替え

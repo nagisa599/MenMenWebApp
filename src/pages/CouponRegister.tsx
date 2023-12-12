@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Coupon } from "@/interfaces/Coupon";
+import { Coupon } from "@/interfaces/coupon/Coupon";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { uploadBytes, getStorage, ref, getDownloadURL } from "firebase/storage";
-import CouponForm from "@/component/CouponForm";
+import CouponForm from "@/component/coupon/CouponForm";
+import Navbar from "@/component/Navbar";
 
-export default function CouponRegister() {
+const CouponRegister: React.FC = () => {
   const [newCoupon, setNewCoupon] = useState<Coupon>({
     id: '',
     name: '',
@@ -17,9 +18,7 @@ export default function CouponRegister() {
 
   const addNewCoupon = async () => {
     try {
-      const db = getFirestore();
-      const couponRef = collection(db, 'coupons');
-      await addDoc(couponRef, {
+      await addDoc(collection(getFirestore(), 'coupons'), {
         name: newCoupon.name,
         content: newCoupon.content,
         target: newCoupon.target,
@@ -44,9 +43,8 @@ export default function CouponRegister() {
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      const storage = getStorage();
-      const storageRef = ref(storage, `${file.name}`);
-      uploadBytes(storageRef, file).then((snapshot) => {
+      const storageRef = ref(getStorage(), `${file.name}`);
+      uploadBytes(storageRef, file).then(() => {
         getDownloadURL(storageRef).then((url) => {
           setNewCoupon({ ...newCoupon, image: url });
         });
@@ -67,12 +65,17 @@ export default function CouponRegister() {
   };
 
   return (
-    <CouponForm
-      newCoupon={newCoupon}
-      handleInputChange={handleInputChange}
-      handleFileInputChange={handleFileInputChange}
-      handleDateChange={handleDateChange}
-      addNewCoupon={addNewCoupon}
-    />
+    <div className="mb-5">
+      <Navbar />
+      <CouponForm
+        newCoupon={newCoupon}
+        handleInputChange={handleInputChange}
+        handleFileInputChange={handleFileInputChange}
+        handleDateChange={handleDateChange}
+        addNewCoupon={addNewCoupon}
+      />
+    </div>
   )
 }
+
+export default CouponRegister;

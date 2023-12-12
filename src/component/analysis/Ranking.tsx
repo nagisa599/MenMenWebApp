@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getStorage, getDownloadURL, ref } from "firebase/storage";
 import RankingCard from "./RankingCard";
+import { RANKING_URL } from "@/constant/env";
 
 interface RankingComponent {
   imageUrl: string,
@@ -13,30 +14,31 @@ interface RankingComponent {
 const Ranking: React.FC = () => {
   const [ranking, setRanking] = useState<RankingComponent[]>([]);
 
-  const storage = getStorage();
-
   const fetchVisitRanking = async (): Promise<RankingComponent[]> => {
-    const today = new Date();
-    // const url = process.env.RANKING_URL;
-    try {
-      const response = await fetch("https://us-central1-menmen-d01dd.cloudfunctions.net/generateVisitRanking");
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+    const url = RANKING_URL;
+    if (url) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const rankingData = await response.json();
+        const ImageDownloadRankingData = await Promise.all(
+          rankingData.ranking.map(async (data: RankingComponent) => {
+            const imageURL = await getDownloadURL(ref(getStorage(), data.imageUrl));
+            return {
+              ...data,
+              imageUrl: imageURL,
+            };
+          }),
+        );
+        return ImageDownloadRankingData;
+      } catch (error) {
+        console.error('Fetch error', error);
+        return [];
       }
-      const rankingData = await response.json();
-      console.log('rankingData:', rankingData);
-      const ImageDownloadRankingData = await Promise.all(
-        rankingData.ranking.map(async (data: RankingComponent) => {
-          const imageURL = await getDownloadURL(ref(storage, data.imageUrl));
-          return {
-            ...data,
-            imageUrl: imageURL,
-          };
-        }),
-      );
-      return ImageDownloadRankingData;
-    } catch (error) {
-      console.error('Fetch error', error);
+    } else {
+      console.error('URLが定義されていません');
       return [];
     }
   }
@@ -45,7 +47,6 @@ const Ranking: React.FC = () => {
     const fetchAndSetRanking = async () => {
       try {
         const rankingData = await fetchVisitRanking();
-        console.log('rankingData:', rankingData);
         if (rankingData) {
           setRanking(rankingData);
         }

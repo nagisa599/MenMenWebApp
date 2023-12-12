@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react"
 import Navbar from "@/component/Navbar"
-import { getDocs, getFirestore, query, where, collection, orderBy } from "firebase/firestore";
+import { getDocs, getFirestore, query, where, collection } from "firebase/firestore";
 import Image from "next/image";
 import { ref, getStorage, getDownloadURL } from "firebase/storage";
 
-export default function Home() {
+const Home: React.FC = () => {
   const [lunchTime, setLunchTime] = useState<string>('');
   const [dinnerTime, setDinnerTime] = useState<string>('');
   const [imageUrls, setImageUrls] = useState<string[]>([]);
@@ -121,3 +121,5 @@ export default function Home() {
     </div>
   )
 }
+
+export default Home;

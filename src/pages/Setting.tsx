@@ -2,7 +2,7 @@ import Navbar from "@/component/Navbar";
 import React from "react";
 import Link from "next/link";
 
-const Setting = () => {
+const Setting: React.FC = () => {
   return (
     <div>
       <Navbar />
