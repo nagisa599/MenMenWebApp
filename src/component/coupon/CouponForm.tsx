@@ -1,6 +1,5 @@
 import React from "react";
 import { Coupon } from "@/interfaces/coupon/Coupon";
-import Navbar from "../Navbar";
 import Link from "next/link";
 import { formatDateToYYMMDD } from "@/utils/DateFormat";
 

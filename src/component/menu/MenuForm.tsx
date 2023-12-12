@@ -1,6 +1,5 @@
 import React from 'react';
 import { Menu } from '@/interfaces/menu/Menu';
-import Navbar from '../Navbar';
 import Link from 'next/link';
 
 interface MenuFormProps {

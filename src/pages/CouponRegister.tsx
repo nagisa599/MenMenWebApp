@@ -18,8 +18,7 @@ const CouponRegister: React.FC = () => {
 
   const addNewCoupon = async () => {
     try {
-      const db = getFirestore();
-      await addDoc(collection(db, 'coupons'), {
+      await addDoc(collection(getFirestore(), 'coupons'), {
         name: newCoupon.name,
         content: newCoupon.content,
         target: newCoupon.target,
@@ -44,9 +43,8 @@ const CouponRegister: React.FC = () => {
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      const storage = getStorage();
-      const storageRef = ref(storage, `${file.name}`);
-      uploadBytes(storageRef, file).then((snapshot) => {
+      const storageRef = ref(getStorage(), `${file.name}`);
+      uploadBytes(storageRef, file).then(() => {
         getDownloadURL(storageRef).then((url) => {
           setNewCoupon({ ...newCoupon, image: url });
         });

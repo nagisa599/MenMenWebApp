@@ -11,8 +11,7 @@ const MenuPage: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const db = getFirestore();
-      const querySnapshot = await getDocs(collection(db, 'ramens'));
+      const querySnapshot = await getDocs(collection(getFirestore(), 'ramens'));
       const menuDataPromises: Promise<Menu>[] = [];
 
       querySnapshot.forEach((doc) => {
@@ -20,7 +19,6 @@ const MenuPage: React.FC = () => {
         const imageRef = ref(getStorage(), `${data.imageURL}`);
         const imageUrlPromise = getDownloadURL(imageRef);
 
-        // 画像URLの取得をPromiseで保持
         menuDataPromises.push(imageUrlPromise.then((imageUrl) => ({
           id: doc.id,
           name: data.name,
@@ -35,7 +33,6 @@ const MenuPage: React.FC = () => {
         })));
       });
 
-      // すべてのデータを非同期で取得
       const menuData = await Promise.all(menuDataPromises);
 
       // topping が false のデータを前にするために、true と false の順に並び替え

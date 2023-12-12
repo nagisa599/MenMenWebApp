@@ -13,9 +13,7 @@ interface RankingComponent {
 const Ranking: React.FC = () => {
   const [ranking, setRanking] = useState<RankingComponent[]>([]);
 
-  const storage = getStorage();
   const fetchVisitRanking = async (): Promise<RankingComponent[]> => {
-    const today = new Date();
     // const url = process.env.RANKING_URL;
     try {
       const response = await fetch("https://us-central1-menmen-d01dd.cloudfunctions.net/generateVisitRanking");
@@ -23,10 +21,9 @@ const Ranking: React.FC = () => {
         throw new Error('Network response was not ok');
       }
       const rankingData = await response.json();
-      console.log('rankingData:', rankingData);
       const ImageDownloadRankingData = await Promise.all(
         rankingData.ranking.map(async (data: RankingComponent) => {
-          const imageURL = await getDownloadURL(ref(storage, data.imageUrl));
+          const imageURL = await getDownloadURL(ref(getStorage(), data.imageUrl));
           return {
             ...data,
             imageUrl: imageURL,
@@ -44,7 +41,6 @@ const Ranking: React.FC = () => {
     const fetchAndSetRanking = async () => {
       try {
         const rankingData = await fetchVisitRanking();
-        console.log('rankingData:', rankingData);
         if (rankingData) {
           setRanking(rankingData);
         }

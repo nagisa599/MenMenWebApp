@@ -12,8 +12,7 @@ const CouponPage: React.FC = () => {
 
   const fetchCouponData = async () => {
     try {
-      const db = getFirestore();
-      const querySnapshot = await getDocs(collection(db, 'coupons'));
+      const querySnapshot = await getDocs(collection(getFirestore(), 'coupons'));
       const couponDataPromises: Promise<Coupon>[] = [];
 
       querySnapshot.forEach((doc) => {
