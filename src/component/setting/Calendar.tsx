@@ -28,9 +28,9 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({ selectedDates, se
   };
 
   const formatDate = (date: Date) => {
-    const month = date.getMonth() + 1; // 月は0から始まるため、1を足す
+    const month = date.getMonth() + 1;
     const day = date.getDate();
-    return `${month}/${day}`; // MM/DD 形式
+    return `${month}/${day}`;
   };
 
   return (

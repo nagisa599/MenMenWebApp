@@ -24,8 +24,7 @@ const Analyze: React.FC = () => {
 
     const ramenDict: MenuNameDictionary = {};
     await Promise.all(ramensQuerySnapshot.docs.map(async (doc) => {
-      const data = doc.data();
-      ramenDict[doc.id] = data.name;
+      ramenDict[doc.id] = doc.data().name;
     }));
 
     return ramenDict;
@@ -39,8 +38,7 @@ const Analyze: React.FC = () => {
 
     const querySnapshot = await getDocs(collection(getFirestore(), 'users'));
     await Promise.all(querySnapshot.docs.map(async (user) => {
-      const uid = user.id;
-      const docSnap = await getDoc(doc(getFirestore(), `users/${uid}/`));
+      const docSnap = await getDoc(doc(getFirestore(), `users/${user.id}/`));
       const ramen = docSnap.data()?.ramen;
       const topping = docSnap.data()?.topping;
 

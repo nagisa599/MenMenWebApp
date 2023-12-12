@@ -8,12 +8,13 @@ interface PieChartProps {
   dict: MenuCountDictionary;
 }
 
+// 16進数でランダムな色を生成
 const generateRandomColor = (): string => {
-  // 16進数でランダムな色を生成
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
   return `#${randomColor}`;
 };
 
+// ランダムな色を格納した配列を返す
 const generateColors = (length: number): string[] => {
   const colors = [];
   for (let i = 0; i < length; i++) {

@@ -22,7 +22,6 @@ const Coupon: React.FC = () => {
       const couponData: Coupon[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-
         couponData.push({
           url: data.url,
           createdAt: data.createdAt.toDate().toISOString(),

@@ -16,8 +16,7 @@ const MenuPage: React.FC = () => {
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        const imageRef = ref(getStorage(), `${data.imageURL}`);
-        const imageUrlPromise = getDownloadURL(imageRef);
+        const imageUrlPromise = getDownloadURL(ref(getStorage(), `${data.imageURL}`));
 
         menuDataPromises.push(imageUrlPromise.then((imageUrl) => ({
           id: doc.id,

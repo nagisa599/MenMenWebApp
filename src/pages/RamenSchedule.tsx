@@ -18,10 +18,9 @@ const RamenScheduleForm: React.FC = () => {
     const menuData: MenuOption[] = [];
 
     snapShot.forEach((doc) => {
-      const data = doc.data();
       menuData.push({
         id: doc.id,
-        name: data.name,
+        name: doc.data().name,
       });
     });
 

@@ -77,3 +77,5 @@ const CouponRegister: React.FC = () => {
     </div>
   )
 }
+
+export default CouponRegister;

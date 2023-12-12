@@ -54,7 +54,7 @@ const MenuRegister: React.FC = () => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       const storageRef = ref(getStorage(), `${file.name}`);
-      uploadBytes(storageRef, file).then((snapshot) => {
+      uploadBytes(storageRef, file).then(() => {
         getDownloadURL(storageRef).then((url) => {
           setNewMenu({ ...newMenu, image: url });
         });
