@@ -14,9 +14,7 @@ const RamenScheduleForm: React.FC = () => {
   const [scheduledDate, setScheduledDate] = useState<string>("");
 
   const fetchRamenData = async () => {
-    const db = getFirestore();
-    const menuRef = collection(db, 'ramens');
-    const snapShot = await getDocs(menuRef);
+    const snapShot = await getDocs(collection(getFirestore(), 'ramens'));
     const menuData: MenuOption[] = [];
 
     snapShot.forEach((doc) => {
@@ -35,10 +33,8 @@ const RamenScheduleForm: React.FC = () => {
   }, []);
 
   const handleSubmit = async () => {
-    const db = getFirestore();
     if (selectedMenuId && scheduledDate) {
-      console.log('selectedMenuId:', selectedMenuId);
-      const registerRef = doc(db, `ramens/${selectedMenuId}`);
+      const registerRef = doc(getFirestore(), `ramens/${selectedMenuId}`);
       await updateDoc(registerRef, {
         today: new Date(scheduledDate),
         updatedAt: new Date(),

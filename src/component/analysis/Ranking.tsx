@@ -14,7 +14,6 @@ const Ranking: React.FC = () => {
   const [ranking, setRanking] = useState<RankingComponent[]>([]);
 
   const storage = getStorage();
-
   const fetchVisitRanking = async (): Promise<RankingComponent[]> => {
     const today = new Date();
     // const url = process.env.RANKING_URL;

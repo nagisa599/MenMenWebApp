@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import LineChart from '../component/LineChart';
-import PieChart from '../component/PieChart';
+import PieChart from '../component/analysis/PieChart';
 import { collection, getFirestore, getDocs, getDoc, doc } from 'firebase/firestore';
 import Navbar from '@/component/Navbar';
-import ComingPeople from '@/component/ComingPeople';
-import Ranking from '@/component/Ranking';
+import ComingPeople from '@/component/analysis/ComingPeople';
+import Ranking from '@/component/analysis/Ranking';
 
 interface MenuNameDictionary {
   [key: string]: string;
@@ -21,9 +20,7 @@ const Analyze: React.FC = () => {
 
   // idとメニュー名の辞書を作成
   const FetchMenuData = async () => {
-    const db = getFirestore();
-    const ramensCollection = collection(db, 'ramens');
-    const ramensQuerySnapshot = await getDocs(ramensCollection);
+    const ramensQuerySnapshot = await getDocs(collection(getFirestore(), 'ramens'));
 
     const ramenDict: MenuNameDictionary = {};
     await Promise.all(ramensQuerySnapshot.docs.map(async (doc) => {
@@ -40,13 +37,10 @@ const Analyze: React.FC = () => {
     const ramenCount: MenuCountDictionary = {};
     const toppingCount: MenuCountDictionary = {};
 
-    const db = getFirestore();
-    const usersCollection = collection(db, 'users');
-    const querySnapshot = await getDocs(usersCollection);
+    const querySnapshot = await getDocs(collection(getFirestore(), 'users'));
     await Promise.all(querySnapshot.docs.map(async (user) => {
       const uid = user.id;
-      const userRef = doc(db, `users/${uid}/`);
-      const docSnap = await getDoc(userRef);
+      const docSnap = await getDoc(doc(getFirestore(), `users/${uid}/`));
       const ramen = docSnap.data()?.ramen;
       const topping = docSnap.data()?.topping;
 

@@ -16,9 +16,8 @@ const ComingPeople: React.FC = () => {
 
   const fetchPeopleData = async () => {
     const db = getFirestore();
-    const visitsRef = collection(db, 'visits');
-    const yesterdayCount = query(visitsRef, where('visitDate', '>=', Timestamp.fromDate(yesterday)), where('visitDate', '<', Timestamp.fromDate(today)))
-    const todayCount = query(visitsRef, where('visitDate', '>=', Timestamp.fromDate(today)), where('visitDate', '<', Timestamp.fromDate(tomorrow)))
+    const yesterdayCount = query(collection(db, 'visits'), where('visitDate', '>=', Timestamp.fromDate(yesterday)), where('visitDate', '<', Timestamp.fromDate(today)))
+    const todayCount = query(collection(db, 'visits'), where('visitDate', '>=', Timestamp.fromDate(today)), where('visitDate', '<', Timestamp.fromDate(tomorrow)))
     const yesterdayQuerySnapshot = await getDocs(yesterdayCount);
     const todayQuerySnapshot = await getDocs(todayCount);
     setYesterdayPeople(yesterdayQuerySnapshot.size);

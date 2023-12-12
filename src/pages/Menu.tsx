@@ -2,18 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { collection, getFirestore, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 import Navbar from '@/component/Navbar';
-import MenuTable from '@/component/MenuTable';
-import { Menu } from '@/interfaces/Menu';
+import MenuTable from '@/component/menu/MenuTable';
+import { Menu } from '@/interfaces/menu/Menu';
 import Link from 'next/link';
 
-const MenuPage = () => {
+const MenuPage: React.FC = () => {
   const [menus, setMenu] = useState<Menu[]>([]);
 
   const fetchData = async () => {
     try {
       const db = getFirestore();
-      const menusRef = collection(db, 'ramens');
-      const querySnapshot = await getDocs(menusRef);
+      const querySnapshot = await getDocs(collection(db, 'ramens'));
       const menuDataPromises: Promise<Menu>[] = [];
 
       querySnapshot.forEach((doc) => {

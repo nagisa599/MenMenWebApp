@@ -2,19 +2,18 @@ import React, { useState, useEffect } from "react";
 import Navbar from "@/component/Navbar";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref } from "firebase/storage";
-import { Coupon } from "@/interfaces/Coupon";
+import { Coupon } from "@/interfaces/coupon/Coupon";
 import Link from "next/link";
-import CouponTable from "@/component/CouponTable";
+import CouponTable from "@/component/coupon/CouponTable";
 import { convertFirestoreTimestampToDate } from "@/utils/DateFormat";
 
-const CouponPage = () => {
+const CouponPage: React.FC = () => {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
 
   const fetchCouponData = async () => {
     try {
       const db = getFirestore();
-      const couponRef = collection(db, 'coupons');
-      const querySnapshot = await getDocs(couponRef);
+      const querySnapshot = await getDocs(collection(db, 'coupons'));
       const couponDataPromises: Promise<Coupon>[] = [];
 
       querySnapshot.forEach((doc) => {

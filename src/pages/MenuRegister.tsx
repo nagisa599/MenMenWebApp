@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import MenuForm from '@/component/MenuForm'
+import MenuForm from '@/component/menu/MenuForm'
 import { getStorage, uploadBytes, getDownloadURL, ref } from 'firebase/storage';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import { Menu } from '@/interfaces/Menu';
+import { Menu } from '@/interfaces/menu/Menu';
+import Navbar from '@/component/Navbar';
 
 
-export default function MenuRegister() {
+const MenuRegister: React.FC = () => {
   const [newMenu, setNewMenu] = useState<Menu>({
     id: '',
     name: '',
@@ -21,9 +22,7 @@ export default function MenuRegister() {
 
   const addNewMenu = async () => {
     try {
-      const db = getFirestore();
-      const menusRef = collection(db, 'ramens');
-      await addDoc(menusRef, {
+      await addDoc(collection(getFirestore(), 'ramens'), {
         name: newMenu.name,
         price: Number(newMenu.price),
         limit: newMenu.limit,
@@ -54,8 +53,7 @@ export default function MenuRegister() {
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      const storage = getStorage();
-      const storageRef = ref(storage, `${file.name}`);
+      const storageRef = ref(getStorage(), `${file.name}`);
       uploadBytes(storageRef, file).then((snapshot) => {
         getDownloadURL(storageRef).then((url) => {
           setNewMenu({ ...newMenu, image: url });
@@ -73,11 +71,16 @@ export default function MenuRegister() {
   };
 
   return (
-    <MenuForm
-      newMenu={newMenu}
-      handleInputChange={handleInputChange}
-      handleFileInputChange={handleFileInputChange}
-      addNewMenu={addNewMenu}
-    />
+    <div className='mb-5'>
+      <Navbar />
+      <MenuForm
+        newMenu={newMenu}
+        handleInputChange={handleInputChange}
+        handleFileInputChange={handleFileInputChange}
+        addNewMenu={addNewMenu}
+      />
+    </div>
   )
 }
+
+export default MenuRegister;

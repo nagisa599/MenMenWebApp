@@ -9,10 +9,9 @@ const QRcode: React.FC = () => {
 
   useEffect(() => {
     const fetchTokenFromFirebase = async () => {
-      const db = getFirestore();
       const today = new Date();
       const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-      const tokenDoc = await getDoc(doc(db, 'tokens', formattedDate));
+      const tokenDoc = await getDoc(doc(getFirestore(), 'tokens', formattedDate));
 
       if (tokenDoc.exists()) {
         setQrCodeValue(tokenDoc.data().token);

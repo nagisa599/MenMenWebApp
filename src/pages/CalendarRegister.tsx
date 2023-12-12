@@ -2,7 +2,7 @@ import Navbar from "@/component/Navbar";
 import React, { useState } from "react";
 import Link from "next/link";
 import { addDoc, collection, getDocs, getFirestore, query, updateDoc, where, doc } from "firebase/firestore";
-import CalendarComponent from "@/component/Calendar";
+import CalendarComponent from "@/component/setting/Calendar";
 
 interface openTime {
   start: string; // 開始時間
@@ -10,11 +10,10 @@ interface openTime {
 }
 
 interface BusinessHours {
-  lunch: openTime; // 開始時間
-  dinner: openTime;   // 終了時間
+  lunch: openTime;
+  dinner: openTime;
 }
 
-// 曜日ごとの営業時間を格納するためのオブジェクトの型定義
 interface BusinessHoursByDay {
   weekday: BusinessHours;
   saturday: BusinessHours;
@@ -32,7 +31,7 @@ const CalendarForm: React.FC = () => {
   });
 
   const formatDate = (date: Date) => {
-    const month = date.getMonth() + 1; // 月は0から始まるので1を足す
+    const month = date.getMonth() + 1;
     const day = date.getDate();
     return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`;
   };
@@ -56,8 +55,7 @@ const CalendarForm: React.FC = () => {
   const registerCalendar = async () => {
     try {
       const db = getFirestore();
-      const calendarRef = collection(db, 'calendar');
-      const q = query(calendarRef, where('year', '==', Number(year)), where('month', '==', Number(month)));
+      const q = query(collection(db, 'calendar'), where('year', '==', Number(year)), where('month', '==', Number(month)));
       const querySnapshot = await getDocs(q);
       let docExists = false;
       let docId = '';
@@ -79,7 +77,7 @@ const CalendarForm: React.FC = () => {
           businessHours: businessHours,
         });
       } else {
-        await addDoc(calendarRef, {
+        await addDoc(collection(db, 'calendar'), {
           year: Number(year),
           month: Number(month),
           dayoff: sortedClosedDays,
