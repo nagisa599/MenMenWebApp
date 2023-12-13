@@ -48,7 +48,7 @@ const Ranking: React.FC = () => {
     fetchVisitRanking().then((rankingData) => {
       setRanking(rankingData);
     })
-  }, [])
+  }, []);
 
   return (
     <div className="p-4">
