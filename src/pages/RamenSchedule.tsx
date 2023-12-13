@@ -40,7 +40,7 @@ const RamenScheduleForm: React.FC = () => {
       });
       setSelectedMenuId("");
       setScheduledDate("");
-      alert('成功しました。')
+      alert('成功しました。');
     }
   };
 

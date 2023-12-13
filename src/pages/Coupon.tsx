@@ -6,6 +6,7 @@ import { Coupon } from "@/interfaces/coupon/Coupon";
 import Link from "next/link";
 import CouponTable from "@/component/coupon/CouponTable";
 import { convertFirestoreTimestampToDate } from "@/utils/DateFormat";
+import ErrorMessage from "@/utils/ErrorFormat";
 
 const CouponPage: React.FC = () => {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
@@ -33,15 +34,15 @@ const CouponPage: React.FC = () => {
 
       const couponData = await Promise.all(couponDataPromises);
       return couponData;
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      ErrorMessage('クーポンデータの取得に失敗しました。', err);
       return [];
     }
   };
 
   useEffect(() => {
-    fetchCouponData().then((data) => {
-      setCoupons(data);
+    fetchCouponData().then((couponData) => {
+      setCoupons(couponData);
     });
   }, []);
 

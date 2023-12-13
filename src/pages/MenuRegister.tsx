@@ -4,6 +4,7 @@ import { getStorage, uploadBytes, getDownloadURL, ref } from 'firebase/storage';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { Menu } from '@/interfaces/menu/Menu';
 import Navbar from '@/component/Navbar';
+import ErrorMessage from '@/utils/ErrorFormat';
 
 
 const MenuRegister: React.FC = () => {
@@ -45,8 +46,8 @@ const MenuRegister: React.FC = () => {
         price: '',
         updatedAt: new Date(),
       });
-    } catch (error) {
-      console.error('メニューの追加に失敗しました:', error);
+    } catch (err) {
+      ErrorMessage('メニューの追加に失敗しました。', err);
     }
   };
 
@@ -60,7 +61,7 @@ const MenuRegister: React.FC = () => {
         });
       });
     } else {
-      console.log('ファイルが選択されていません');
+      ErrorMessage('ファイルが選択されていません。');
     }
   };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getFirestore, getDocs } from 'firebase/firestore';
 import Navbar from '@/component/Navbar';
 import { useSession } from 'next-auth/react'
+import ErrorMessage from '@/utils/ErrorFormat';
 
 interface Coupon {
   url: string;
@@ -16,25 +17,25 @@ const Coupon: React.FC = () => {
   });
   const { data: session } = useSession();
 
-  const fetchCoupons = async () => {
+  const fetchQuestionaire = async () => {
     try {
       const querySnapshot = await getDocs(collection(getFirestore(), 'googleFormUrl'));
-      const couponData: Coupon[] = [];
+      const questionaireData: Coupon[] = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        couponData.push({
+        questionaireData.push({
           url: data.url,
           createdAt: data.createdAt.toDate().toISOString(),
         });
       });
-      setUrl(couponData);
-    } catch (error) {
-      console.error(error);
+      setUrl(questionaireData);
+    } catch (err) {
+      ErrorMessage('アンケートの取得に失敗しました。', err);
     }
   };
 
   useEffect(() => {
-    fetchCoupons();
+    fetchQuestionaire();
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,14 +50,14 @@ const Coupon: React.FC = () => {
         url: newUrl.url,
         createdAt: createdAt,
       });
-      fetchCoupons();
+      fetchQuestionaire();
       setNewUrl({
         url: '',
         createdAt: '',
 
       });
-    } catch (error) {
-      console.error('クーポンの追加に失敗しました:', error);
+    } catch (err) {
+      ErrorMessage('アンケートの追加に失敗しました。', err);
     }
   };
 
@@ -64,7 +65,6 @@ const Coupon: React.FC = () => {
     const selectedValue = e.target.value; // 選択された値を取得する例
     // ここで選択された値に対する処理を行う
   };
-
 
   return (
     <div>
@@ -80,8 +80,6 @@ const Coupon: React.FC = () => {
             onChange={handleInputChange}
             className="p-2 border border-gray-300 rounded mr-2"
           />
-
-
           <button onClick={addnewUrl} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
             アンケート追加
           </button>
@@ -110,4 +108,3 @@ const Coupon: React.FC = () => {
 };
 
 export default Coupon;
-

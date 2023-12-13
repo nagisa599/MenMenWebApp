@@ -5,7 +5,6 @@ export const convertFirestoreTimestampToDate = (timestamp: Timestamp): Date => {
 };
 
 export function formatDateToYYMMDD(date: Date) {
-  console.log(typeof date, date);
   let year = date.getFullYear().toString();
   let month = (date.getMonth() + 1).toString().padStart(2, '0');
   let day = date.getDate().toString().padStart(2, '0');

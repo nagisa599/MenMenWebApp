@@ -3,6 +3,7 @@ import Navbar from "@/component/Navbar"
 import { getDocs, getFirestore, query, where, collection } from "firebase/firestore";
 import Image from "next/image";
 import { ref, getStorage, getDownloadURL } from "firebase/storage";
+import ErrorMessage from "@/utils/ErrorFormat";
 
 const Home: React.FC = () => {
   const [lunchTime, setLunchTime] = useState<string>('');
@@ -15,12 +16,9 @@ const Home: React.FC = () => {
   const year = today.getFullYear();
 
   useEffect(() => {
-    const db = getFirestore();
-    const storage = getStorage();
-
     const setHeaderTitle = async () => {
       try {
-        const calendarQuery = query(collection(db, 'calendar'),
+        const calendarQuery = query(collection(getFirestore(), 'calendar'),
           where('month', '==', month),
           where('year', '==', year),
         );
@@ -42,8 +40,8 @@ const Home: React.FC = () => {
             setDinnerTime(`${data.businessHours.saturday.dinner.start}~${data.businessHours.saturday.dinner.end}`)
           }
         });
-      } catch (error) {
-        console.error('Error fetching calendar data:', error);
+      } catch (err) {
+        ErrorMessage('今日のお店の情報の取得に失敗しました。', err);
       }
     };
 
@@ -51,9 +49,7 @@ const Home: React.FC = () => {
       today.setHours(0, 0, 0, 0); // 時間をリセットして日付のみに焦点を合わせる
 
       try {
-        const storage = getStorage();
-        const menuQuery = query(collection(db, 'ramens'));
-        const querySnapshot = await getDocs(menuQuery);
+        const querySnapshot = await getDocs(query(collection(getFirestore(), 'ramens')));
         const tempImageUrls = [];
         const tempRamenNames = [];
 
@@ -65,12 +61,12 @@ const Home: React.FC = () => {
             menuDate.setHours(0, 0, 0, 0); // Firestore のタイムスタンプから日付のみを取得
 
             if (menuDate.getTime() === today.getTime()) {
-              const imageUrl = await getDownloadURL(ref(storage, data.imageURL));
+              const imageUrl = await getDownloadURL(ref(getStorage(), data.imageURL));
               tempImageUrls.push(imageUrl);
               tempRamenNames.push(data.name);
             }
           } else {
-            const imageUrl = await getDownloadURL(ref(storage, data.imageURL));
+            const imageUrl = await getDownloadURL(ref(getStorage(), data.imageURL));
             tempImageUrls.push(imageUrl);
             tempRamenNames.push(data.name);
           }
@@ -78,15 +74,13 @@ const Home: React.FC = () => {
 
         setImageUrls(tempImageUrls);
         setRamenNames(tempRamenNames);
-      } catch (error) {
-        console.error('Error fetching menu data:', error);
+      } catch (err) {
+        ErrorMessage('今日のメニューの取得に失敗しました。', err);
       }
     };
 
-
     Promise.all([setHeaderTitle(), setTodayMenu()]);
   }, []);
-
 
   return (
     <div className="flex flex-col h-screen">

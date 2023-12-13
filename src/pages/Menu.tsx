@@ -5,6 +5,7 @@ import Navbar from '@/component/Navbar';
 import MenuTable from '@/component/menu/MenuTable';
 import { Menu } from '@/interfaces/menu/Menu';
 import Link from 'next/link';
+import ErrorMessage from '@/utils/ErrorFormat';
 
 const MenuPage: React.FC = () => {
   const [menus, setMenu] = useState<Menu[]>([]);
@@ -45,15 +46,15 @@ const MenuPage: React.FC = () => {
       });
 
       return sortedMenuData;
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      ErrorMessage('メニューデータの取得に失敗しました。', err);
       return [];
     }
   };
 
   useEffect(() => {
-    fetchData().then((data) => {
-      setMenu(data);
+    fetchData().then((menuData) => {
+      setMenu(menuData);
     });
   }, []);
 
