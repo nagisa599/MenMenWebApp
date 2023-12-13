@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Coupon } from "@/interfaces/coupon/Coupon";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
-import { uploadBytes, getStorage, ref, getDownloadURL } from "firebase/storage";
+import { ref, getStorage, uploadBytes, getDownloadURL } from "firebase/storage";
 import CouponForm from "@/component/coupon/CouponForm";
-import Navbar from "@/component/Navbar";
+import Navbar from "@/component/utils/Navbar";
+import ErrorMessage from "@/utils/ErrorFormat";
 
 const CouponRegister: React.FC = () => {
   const [newCoupon, setNewCoupon] = useState<Coupon>({
@@ -35,8 +36,8 @@ const CouponRegister: React.FC = () => {
         createdAt: new Date(),
         image: '',
       });
-    } catch (error) {
-      console.error('クーポンの追加に失敗しました:', error);
+    } catch (err) {
+      ErrorMessage('クーポンの登録に失敗しました。', err);
     }
   };
 
@@ -50,7 +51,7 @@ const CouponRegister: React.FC = () => {
         });
       });
     } else {
-      console.log('ファイルが選択されていません');
+      ErrorMessage('ファイルが選択されていません。');
     }
   };
 

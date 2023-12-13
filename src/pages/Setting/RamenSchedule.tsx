@@ -1,4 +1,4 @@
-import Navbar from "@/component/Navbar";
+import Navbar from "@/component/utils/Navbar";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { collection, getFirestore, getDocs, doc, updateDoc } from "firebase/firestore";
@@ -40,7 +40,7 @@ const RamenScheduleForm: React.FC = () => {
       });
       setSelectedMenuId("");
       setScheduledDate("");
-      alert('成功しました。')
+      alert('成功しました。');
     }
   };
 

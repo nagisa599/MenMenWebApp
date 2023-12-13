@@ -1,8 +1,9 @@
-import Navbar from "@/component/Navbar";
+import Navbar from "@/component/utils/Navbar";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { getFirestore, getDoc, doc } from "firebase/firestore";
 import QRCode from 'qrcode.react';
+import ErrorMessage from "@/utils/ErrorFormat";
 
 const QRcode: React.FC = () => {
   const [qrCodeValue, setQrCodeValue] = useState<string>('');
@@ -16,7 +17,7 @@ const QRcode: React.FC = () => {
       if (tokenDoc.exists()) {
         setQrCodeValue(tokenDoc.data().token);
       } else {
-        console.log('トークンが存在しません');
+        ErrorMessage('技術的エラーです。開発者にご連絡ください。');
       }
     };
 

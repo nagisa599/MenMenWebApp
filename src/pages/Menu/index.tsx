@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getFirestore, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import Navbar from '@/component/Navbar';
+import Navbar from '@/component/utils/Navbar';
 import MenuTable from '@/component/menu/MenuTable';
 import { Menu } from '@/interfaces/menu/Menu';
 import Link from 'next/link';
+import ErrorMessage from '@/utils/ErrorFormat';
 
 const MenuPage: React.FC = () => {
   const [menus, setMenu] = useState<Menu[]>([]);
@@ -45,15 +46,15 @@ const MenuPage: React.FC = () => {
       });
 
       return sortedMenuData;
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      ErrorMessage('メニューデータの取得に失敗しました。', err);
       return [];
     }
   };
 
   useEffect(() => {
-    fetchData().then((data) => {
-      setMenu(data);
+    fetchData().then((menuData) => {
+      setMenu(menuData);
     });
   }, []);
 
@@ -63,7 +64,7 @@ const MenuPage: React.FC = () => {
       <div className="divide-y divide-gray-200 mx-60 p-4">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">メニュー表</h1>
-          <Link href="/MenuRegister" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
+          <Link href="/Menu/Register" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
             メニュー追加
           </Link>
         </div>

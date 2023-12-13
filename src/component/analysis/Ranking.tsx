@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getStorage, getDownloadURL, ref } from "firebase/storage";
 import RankingCard from "./RankingCard";
 import { RANKING_URL } from "@/constant/env";
+import ErrorMessage from "@/utils/ErrorFormat";
 
 interface RankingComponent {
   imageUrl: string,
@@ -33,29 +34,21 @@ const Ranking: React.FC = () => {
           }),
         );
         return ImageDownloadRankingData;
-      } catch (error) {
-        console.error('Fetch error', error);
+      } catch (err) {
+        ErrorMessage('ランキングの取得に失敗しました。', err);
         return [];
       }
     } else {
-      console.error('URLが定義されていません');
+      ErrorMessage('技術的エラーです。開発者にご連絡ください。');
       return [];
     }
   }
 
   useEffect(() => {
-    const fetchAndSetRanking = async () => {
-      try {
-        const rankingData = await fetchVisitRanking();
-        if (rankingData) {
-          setRanking(rankingData);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    fetchAndSetRanking();
-  }, [])
+    fetchVisitRanking().then((rankingData) => {
+      setRanking(rankingData);
+    })
+  }, []);
 
   return (
     <div className="p-4">

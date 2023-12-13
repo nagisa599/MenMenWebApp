@@ -1,8 +1,9 @@
-import Navbar from "@/component/Navbar";
+import Navbar from "@/component/utils/Navbar";
 import React, { useState } from "react";
 import Link from "next/link";
 import { addDoc, collection, getDocs, getFirestore, query, updateDoc, where, doc } from "firebase/firestore";
 import CalendarComponent from "@/component/setting/Calendar";
+import ErrorMessage from "@/utils/ErrorFormat";
 
 interface openTime {
   start: string; // 開始時間
@@ -93,8 +94,8 @@ const CalendarForm: React.FC = () => {
       setClosedDays([]);
       setMonth('');
       setYear('');
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      ErrorMessage('カレンダーの登録に失敗しました。', err);
     }
   };
 

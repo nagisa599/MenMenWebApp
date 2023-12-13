@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "@/component/Navbar";
+import Navbar from "@/component/utils/Navbar";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref } from "firebase/storage";
 import { Coupon } from "@/interfaces/coupon/Coupon";
 import Link from "next/link";
 import CouponTable from "@/component/coupon/CouponTable";
 import { convertFirestoreTimestampToDate } from "@/utils/DateFormat";
+import ErrorMessage from "@/utils/ErrorFormat";
 
 const CouponPage: React.FC = () => {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
@@ -33,15 +34,15 @@ const CouponPage: React.FC = () => {
 
       const couponData = await Promise.all(couponDataPromises);
       return couponData;
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      ErrorMessage('クーポンデータの取得に失敗しました。', err);
       return [];
     }
   };
 
   useEffect(() => {
-    fetchCouponData().then((data) => {
-      setCoupons(data);
+    fetchCouponData().then((couponData) => {
+      setCoupons(couponData);
     });
   }, []);
 
@@ -51,7 +52,7 @@ const CouponPage: React.FC = () => {
       <div className="divide-y divide-gray-200 mx-60 p-4">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">クーポン表</h1>
-          <Link href="/CouponRegister" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
+          <Link href="/Coupon/Register" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
             クーポン追加
           </Link>
         </div>

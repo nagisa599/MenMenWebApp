@@ -1,7 +1,7 @@
 import React from 'react';
 import 'chart.js/auto';
 import { Pie } from 'react-chartjs-2';
-import { MenuCountDictionary } from '@/pages/UserAnalysis';
+import { MenuCountDictionary } from '@/pages/Analysis';
 
 interface PieChartProps {
   title: string;
