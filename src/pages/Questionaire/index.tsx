@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, getFirestore, getDocs } from 'firebase/firestore';
-import Navbar from '@/component/Navbar';
+import Navbar from '@/component/utils/Navbar';
 import { useSession } from 'next-auth/react'
 import ErrorMessage from '@/utils/ErrorFormat';
 

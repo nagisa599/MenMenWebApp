@@ -3,7 +3,7 @@ import { Coupon } from "@/interfaces/coupon/Coupon";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { ref, getStorage, uploadBytes, getDownloadURL } from "firebase/storage";
 import CouponForm from "@/component/coupon/CouponForm";
-import Navbar from "@/component/Navbar";
+import Navbar from "@/component/utils/Navbar";
 import ErrorMessage from "@/utils/ErrorFormat";
 
 const CouponRegister: React.FC = () => {

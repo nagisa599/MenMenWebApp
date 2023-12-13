@@ -1,4 +1,4 @@
-import Navbar from "@/component/Navbar";
+import Navbar from "@/component/utils/Navbar";
 import React, { useState } from "react";
 import Link from "next/link";
 import { addDoc, collection, getDocs, getFirestore, query, updateDoc, where, doc } from "firebase/firestore";

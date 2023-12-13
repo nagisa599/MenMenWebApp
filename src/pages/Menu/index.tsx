@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getFirestore, getDocs } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
-import Navbar from '@/component/Navbar';
+import Navbar from '@/component/utils/Navbar';
 import MenuTable from '@/component/menu/MenuTable';
 import { Menu } from '@/interfaces/menu/Menu';
 import Link from 'next/link';

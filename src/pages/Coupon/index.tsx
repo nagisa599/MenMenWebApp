@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "@/component/Navbar";
+import Navbar from "@/component/utils/Navbar";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref } from "firebase/storage";
 import { Coupon } from "@/interfaces/coupon/Coupon";

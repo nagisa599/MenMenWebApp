@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PieChart from '../../component/analysis/PieChart';
 import { collection, getFirestore, getDocs, getDoc, doc } from 'firebase/firestore';
-import Navbar from '@/component/Navbar';
+import Navbar from '@/component/utils/Navbar';
 import ComingPeople from '@/component/analysis/ComingPeople';
 import Ranking from '@/component/analysis/Ranking';
 

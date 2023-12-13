@@ -3,7 +3,7 @@ import MenuForm from '@/component/menu/MenuForm'
 import { getStorage, uploadBytes, getDownloadURL, ref } from 'firebase/storage';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { Menu } from '@/interfaces/menu/Menu';
-import Navbar from '@/component/Navbar';
+import Navbar from '@/component/utils/Navbar';
 import ErrorMessage from '@/utils/ErrorFormat';
 
 

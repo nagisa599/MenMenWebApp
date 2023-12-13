@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import Navbar from "@/component/Navbar"
+import Navbar from "@/component/utils/Navbar"
 import { getDocs, getFirestore, query, where, collection } from "firebase/firestore";
 import Image from "next/image";
 import { ref, getStorage, getDownloadURL } from "firebase/storage";
