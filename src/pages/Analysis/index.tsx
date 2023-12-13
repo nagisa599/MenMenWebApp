@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import PieChart from '../component/analysis/PieChart';
+import PieChart from '../../component/analysis/PieChart';
 import { collection, getFirestore, getDocs, getDoc, doc } from 'firebase/firestore';
 import Navbar from '@/component/Navbar';
 import ComingPeople from '@/component/analysis/ComingPeople';

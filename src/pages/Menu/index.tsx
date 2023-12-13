@@ -64,7 +64,7 @@ const MenuPage: React.FC = () => {
       <div className="divide-y divide-gray-200 mx-60 p-4">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">メニュー表</h1>
-          <Link href="/MenuRegister" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
+          <Link href="/Menu/Register" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
             メニュー追加
           </Link>
         </div>
